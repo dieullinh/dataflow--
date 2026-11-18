@@ -1,0 +1,4638 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataFlow · Nền Tảng Phân Tích & Báo Cáo Dữ Liệu Doanh Nghiệp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* HARMONIOUS PINK & BERRY CLAYMORPHISM PALETTE */
+      --canvas-bg: #fff5f8;
+      --outer-bg: #fffbfd;
+      --card-bg: #ffffff;
+      --card-subtle-bg: #fff9fb;
+      --hot-pink: #ff2a70;
+      --hot-pink-hover: #e0185d;
+      --hot-pink-gradient: linear-gradient(135deg, #ff2a70 0%, #ff5287 100%);
+      --berry-dark: #b80c43;
+      --pastel-pink-soft: #ffe4ec;
+      --pastel-pink-border: #ffd0dc;
+      --pastel-pink-light: #fff0f5;
+      
+      --purple-accent: #a855f7;
+      --purple-light: #faf5ff;
+      --purple-border: #e9d5ff;
+      
+      --text-dark: #1e293b;
+      --text-sub: #475569;
+      --text-muted: #8392a5;
+      
+      --border-radius-window: 28px;
+      --border-radius-card: 24px;
+      --border-radius-inner: 18px;
+      --border-radius-pill: 9999px;
+      
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at 15% 15%, #ffeef4 0%, #fffbfd 45%, #fff5f8 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 20px 48px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* SPARKLE CANVAS */
+    #sparkle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9990;
+    }
+
+    /* TOP HEADER */
+    .top-header-bar {
+      width: 100%;
+      max-width: 1440px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 8px 4px;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon-rounded {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: var(--hot-pink-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(255, 42, 112, 0.28), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .brand-icon-rounded:hover {
+      transform: scale(1.06) rotate(-3deg);
+    }
+
+    .brand-info-col h1 {
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 800;
+      background: var(--pastel-pink-soft);
+      color: var(--hot-pink);
+      padding: 3px 10px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid var(--pastel-pink-border);
+    }
+
+    .brand-info-col p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .top-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--border-radius-pill);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1.5px solid transparent;
+      outline: none;
+      user-select: none;
+    }
+
+    .btn-pink-gradient {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(255, 42, 112, 0.3), inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+    .btn-pink-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 42, 112, 0.42);
+    }
+
+    .btn-outline-pill {
+      background: #ffffff;
+      border-color: var(--pastel-pink-border);
+      color: var(--text-sub);
+    }
+    .btn-outline-pill:hover {
+      background: var(--pastel-pink-light);
+      color: var(--hot-pink);
+      border-color: var(--hot-pink);
+    }
+
+    /* MAIN APP WORKSTATION */
+    .app-window-frame {
+      width: 100%;
+      max-width: 1440px;
+      background: #ffffff;
+      border-radius: var(--border-radius-window);
+      border: 2px solid #ffd4e0;
+      box-shadow: 0 20px 60px rgba(255, 90, 140, 0.12), 0 4px 16px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* WINDOW HEADER */
+    .window-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: linear-gradient(180deg, #fff9fb 0%, #fff1f5 100%);
+      border-bottom: 1.5px solid #ffd8e4;
+    }
+
+    .window-header-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--hot-pink);
+    }
+
+    .window-reset-button {
+      background: #ffffff;
+      border: 1.5px solid #ffd5e2;
+      color: var(--text-sub);
+      padding: 6px 14px;
+      border-radius: var(--border-radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: all 0.22s;
+    }
+    .window-reset-button:hover {
+      background: #fff0f5;
+      color: var(--hot-pink);
+      border-color: var(--hot-pink);
+      transform: translateY(-1px);
+    }
+
+    /* WORKBENCH LAYOUT */
+    .workbench-layout {
+      display: flex;
+      min-height: 820px;
+      background: #fffdfd;
+      position: relative;
+    }
+
+    /* SIDEBAR */
+    .workbench-sidebar {
+      width: 295px;
+      min-width: 295px;
+      background: linear-gradient(180deg, #fffafd 0%, #fff3f7 100%);
+      border-right: 1.5px solid var(--pastel-pink-border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.32s cubic-bezier(0.16, 1, 0.3, 1), padding 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      user-select: none;
+    }
+
+    .workbench-sidebar.collapsed {
+      width: 82px;
+      min-width: 82px;
+      padding: 22px 10px;
+    }
+
+    .sidebar-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding: 0 4px;
+    }
+
+    .sidebar-step-title {
+      font-size: 11.5px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--hot-pink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .workbench-sidebar.collapsed .sidebar-step-title {
+      display: none;
+    }
+
+    .sidebar-toggle-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1.5px solid #ffd0dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--hot-pink);
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(255, 42, 112, 0.12);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-left: auto;
+    }
+    .sidebar-toggle-btn:hover {
+      background: #fff0f5;
+      border-color: var(--hot-pink);
+      transform: scale(1.08);
+      box-shadow: 0 5px 14px rgba(255, 42, 112, 0.25);
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-item-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1.5px solid #ffd8e4;
+      border-radius: var(--border-radius-inner);
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.05), inset 0 1px 0 #ffffff;
+      cursor: pointer;
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .workbench-sidebar.collapsed .step-item-card {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .step-item-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 77, 136, 0.15);
+      border-color: var(--hot-pink);
+    }
+
+    .step-item-card.active {
+      background: var(--hot-pink-gradient);
+      border-color: #ff1c65;
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(255, 42, 112, 0.36), inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .step-item-card.active .step-title-text {
+      color: #ffffff;
+    }
+
+    .step-item-card.active .step-desc-text {
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .step-item-card.active .step-icon-box {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .step-item-card.active .step-status-tag {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .step-item-card.completed {
+      border-color: #ffb8cd;
+      background: #fff5f8;
+    }
+    .step-item-card.completed .step-icon-box {
+      background: #ffe4ec;
+      color: var(--hot-pink);
+      border-color: #ffd0dc;
+    }
+    .step-item-card.completed .step-status-tag {
+      background: #ffe4ec;
+      color: var(--berry-dark);
+      border-color: #ffccd9;
+    }
+
+    .step-item-card.locked {
+      background: #fdfafb;
+      border-color: #fae1e8;
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+    .step-item-card.locked:hover {
+      transform: none;
+      border-color: #fae1e8;
+      box-shadow: none;
+    }
+
+    .step-left-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--pastel-pink-soft);
+      border: 1.2px solid var(--pastel-pink-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--hot-pink);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .step-meta-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .workbench-sidebar.collapsed .step-meta-col {
+      display: none;
+    }
+
+    .step-title-text {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .step-desc-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .step-status-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: var(--border-radius-pill);
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .workbench-sidebar.collapsed .step-status-tag {
+      display: none;
+    }
+
+    /* AI COPILOT CARD */
+    .ai-assistant-card {
+      background: #ffffff;
+      border: 1.5px solid #ffd4e0;
+      border-radius: var(--border-radius-inner);
+      padding: 14px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .workbench-sidebar.collapsed .ai-assistant-card {
+      display: none;
+    }
+
+    .ai-assistant-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 900;
+      color: var(--hot-pink);
+    }
+
+    .ai-status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--hot-pink);
+      box-shadow: 0 0 8px rgba(255, 42, 112, 0.6);
+    }
+
+    .ai-assistant-bubble {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: var(--text-sub);
+      background: var(--pastel-pink-light);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #ffccd9;
+    }
+
+    /* MAIN WORKSPACE CANVAS */
+    .workbench-main {
+      flex: 1;
+      padding: 28px 32px 40px;
+      background: #ffffff;
+      overflow-y: auto;
+      max-height: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .step-main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid #f1f5f9;
+      padding-bottom: 16px;
+    }
+
+    .step-main-header-left h2 {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text-dark);
+      letter-spacing: -0.3px;
+    }
+
+    .step-main-header-left p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .step-progress-indicator {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--hot-pink);
+      background: var(--pastel-pink-soft);
+      padding: 5px 14px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid var(--pastel-pink-border);
+    }
+
+    /* CLAY CARDS */
+    .clay-card {
+      background: #ffffff;
+      border: 1.5px solid #ffccd9;
+      border-radius: var(--border-radius-card);
+      padding: 22px 24px;
+      box-shadow: 0 10px 30px rgba(255, 90, 140, 0.06), 0 2px 8px rgba(0,0,0,0.02);
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .clay-card:hover {
+      border-color: #ff9eb8;
+    }
+
+    .card-header-flex {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card-icon-pill {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--pastel-pink-soft);
+      border: 1px solid var(--pastel-pink-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--hot-pink);
+      flex-shrink: 0;
+    }
+
+    .card-title-group h3 {
+      font-size: 15.5px;
+      font-weight: 900;
+      color: var(--text-dark);
+    }
+
+    .card-title-group p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* FORM CONTROLS */
+    .form-group-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .form-label-styled {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-label-required {
+      color: var(--hot-pink);
+      margin-left: 3px;
+    }
+
+    .form-label-hint {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .custom-input-box, .custom-textarea-box, .custom-select-box {
+      width: 100%;
+      background: #fdfcfe;
+      border: 1.5px solid #ffd8e4;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-family: var(--font-main);
+      font-size: 13px;
+      color: var(--text-dark);
+      outline: none;
+      transition: all 0.22s;
+    }
+
+    .custom-input-box:focus, .custom-textarea-box:focus, .custom-select-box:focus {
+      background: #ffffff;
+      border-color: var(--hot-pink);
+      box-shadow: 0 0 0 3px rgba(255, 42, 112, 0.12);
+    }
+
+    .custom-textarea-box {
+      resize: vertical;
+      min-height: 82px;
+      line-height: 1.5;
+    }
+
+    /* SHEETS CONNECTOR */
+    .sheets-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .sheets-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .sheets-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .sheets-input-wrapper .custom-input-box {
+      padding-left: 38px;
+    }
+
+    .btn-connect-sheets {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.22s;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.28);
+    }
+    .btn-connect-sheets:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(255, 42, 112, 0.38);
+    }
+
+    /* PROCEED BUTTONS */
+    .proceed-step-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #fff5f8 0%, #ffe9f1 100%);
+      border: 1.5px solid #ffccd9;
+      border-radius: var(--border-radius-inner);
+      padding: 16px 22px;
+      margin-top: 10px;
+    }
+
+    .proceed-banner-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .proceed-banner-left h4 {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .proceed-banner-left p {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .btn-unlock-next {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: var(--border-radius-pill);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.28);
+      transition: all 0.22s;
+      white-space: nowrap;
+    }
+    .btn-unlock-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(255, 42, 112, 0.42);
+    }
+
+    /* STAT TILES */
+    .summary-tiles-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-tile-card {
+      background: #ffffff;
+      border: 1.5px solid #ffccd9;
+      border-radius: var(--border-radius-inner);
+      padding: 18px 20px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.04);
+    }
+
+    .stat-tile-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .stat-tile-number {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text-dark);
+      font-family: var(--font-mono);
+      margin-top: 4px;
+    }
+
+    /* COMPARISON BARS */
+    .compare-filters-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .horizontal-bars-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #fafafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+
+    .hbar-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hbar-label {
+      width: 110px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+      flex-shrink: 0;
+    }
+
+    .hbar-track {
+      flex: 1;
+      height: 14px;
+      background: #f1f5f9;
+      border-radius: 9999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hbar-fill-pink {
+      height: 100%;
+      background: linear-gradient(90deg, #ff2a70 0%, #ff6b98 100%);
+      border-radius: 9999px;
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hbar-value-text {
+      width: 130px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      color: var(--text-dark);
+      flex-shrink: 0;
+    }
+
+    /* DATA PROFILE TABLE */
+    .table-rounded-wrapper {
+      width: 100%;
+      border: 1.5px solid #ffccd9;
+      border-radius: var(--border-radius-inner);
+      overflow-x: auto;
+      background: #ffffff;
+    }
+
+    .styled-profile-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .styled-profile-table th {
+      background: #fff5f8;
+      color: var(--text-dark);
+      font-weight: 800;
+      padding: 12px 16px;
+      border-bottom: 1.5px solid #ffd8e4;
+      white-space: nowrap;
+    }
+
+    .styled-profile-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #f8fafc;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .styled-profile-table tr:hover td {
+      background: #fffafd;
+    }
+
+    /* STEP 4: DASHBOARD & CHARTS */
+    .dashboard-kpi-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .kpi-tile-box {
+      background: #fafbfc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .kpi-tile-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .kpi-tile-value {
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--text-dark);
+      font-family: var(--font-mono);
+      margin-top: 4px;
+    }
+
+    .kpi-tile-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e11d48;
+      margin-top: 2px;
+    }
+
+    .charts-quad-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .quad-chart-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--border-radius-inner);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 250px;
+    }
+
+    .insights-bullets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      list-style: none;
+    }
+
+    .insights-bullets-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-dark);
+    }
+
+    /* BOTTOM SAMPLE DATASET LINK */
+    .sample-dataset-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 10px 4px 0;
+    }
+
+    .btn-sample-dataset-link {
+      background: #fff9fb;
+      border: 1.5px solid #ffd0dc;
+      color: var(--hot-pink);
+      padding: 8px 16px;
+      border-radius: var(--border-radius-pill);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.22s;
+    }
+    .btn-sample-dataset-link:hover {
+      background: var(--pastel-pink-soft);
+      border-color: var(--hot-pink);
+      transform: translateY(-1px);
+    }
+
+    /* FLOATING BOTTOM-RIGHT CORNER CONTROLS */
+    .floating-corner-controls {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 9999;
+    }
+
+    .corner-floating-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1.5px solid #ffccd9;
+      box-shadow: 0 6px 20px rgba(255, 42, 112, 0.22), 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      color: var(--hot-pink);
+      position: relative;
+    }
+
+    .corner-floating-dot:hover {
+      transform: scale(1.12);
+      border-color: var(--hot-pink);
+      box-shadow: 0 8px 24px rgba(255, 42, 112, 0.38);
+    }
+
+    .sound-pulse-ring {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--hot-pink);
+      box-shadow: 0 0 8px rgba(255, 42, 112, 0.8);
+      animation: pulse-ring 2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.6; }
+      100% { transform: scale(0.95); opacity: 1; }
+    }
+
+    .corner-floating-dot.muted {
+      color: #94a3b8;
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .corner-floating-dot.muted .sound-pulse-ring {
+      background: #cbd5e1;
+      animation: none;
+      box-shadow: none;
+    }
+
+    /* TOAST NOTIFICATION */
+    .custom-toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: var(--border-radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .custom-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @keyframes shake-warning {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .shake-anim {
+      animation: shake-warning 0.4s ease-in-out;
+    }
+
+    /* FORMAL CORPORATE PRINT HEADER & SIGNATURES (HIDDEN ON SCREEN, SHOWN ONLY IN PRINT) */
+    .print-formal-header {
+      display: none;
+    }
+    .print-formal-table-section {
+      display: none;
+    }
+    .print-formal-signatures {
+      display: none;
+    }
+    .print-kpi-meta-text {
+      display: none;
+    }
+
+    /* SCREEN RESPONSIVE */
+    @media screen and (max-width: 1024px) {
+      .charts-quad-grid, .dashboard-kpi-banner, .summary-tiles-row {
+        grid-template-columns: 1fr;
+      }
+      .workbench-layout {
+        flex-direction: column;
+      }
+      .workbench-sidebar {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1.5px solid var(--pastel-pink-border);
+      }
+    }
+
+    /* ============================================================
+       OFFICIAL CORPORATE PRINT ENGINE (@MEDIA PRINT)
+       - Strict A4 pagination
+       - Locks 4 KPI tiles in 1 horizontal row
+       - Renders formal corporate letterhead, data table & signatures
+       - Zero web clutter
+       ============================================================ */
+    
+  /* =========================================================================
+     C-LEVEL EXECUTIVE PRINT REPORT CSS (SCREEN HIDING & PRINT ENGINE)
+     ========================================================================= */
+  #print-executive-report {
+    display: block !important;
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm 12mm 12mm;
+    }
+
+    *, *::before, *::after {
+      box-shadow: none !important;
+      text-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    html, body {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      display: block !important;
+      overflow: visible !important;
+      position: static !important;
+      float: none !important;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+    }
+
+    /* HIDE ALL INTERACTIVE SCREEN UI */
+    .app-window-frame,
+    #mouse-spotlight,
+    .mouse-spotlight-layer,
+    #sparkle-canvas,
+    .floating-corner-controls,
+    .corner-floating-dock,
+    #ai-drawer,
+    .ai-copilot-drawer,
+    .custom-toast,
+    .watermark-waves-bg,
+    .step-watermark-art,
+    .global-background-watermarks {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      height: 0 !important;
+      width: 0 !important;
+      overflow: hidden !important;
+      position: absolute !important;
+      left: -9999px !important;
+    }
+
+    /* REVEAL DEDICATED PRINT DOSSIER */
+    #print-executive-report {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+      position: static !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+    }
+
+    .print-page {
+      width: 100% !important;
+      height: auto !important;
+      position: relative !important;
+      box-sizing: border-box !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+
+    .dossier-page-break {
+      page-break-before: always !important;
+      break-before: page !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+
+    /* DOSSIER HEADER */
+    .dossier-header {
+      border-bottom: 2.5px solid #ff2a70;
+      padding-bottom: 10px;
+      margin-bottom: 8px;
+    }
+
+    .dossier-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .dossier-brand-title {
+      font-size: 13pt;
+      font-weight: 900;
+      color: #ff2a70;
+      letter-spacing: -0.3px;
+      text-transform: uppercase;
+    }
+
+    .dossier-brand-sub {
+      font-size: 7.5pt;
+      color: #64748b;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .dossier-meta-card {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .meta-label {
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .meta-value {
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .meta-badge-confidential {
+      display: inline-block;
+      background: #fee2e2;
+      color: #dc2626;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 7pt;
+      border: 1px solid #fecaca;
+    }
+
+    .dossier-title-banner {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .dossier-main-title {
+      font-size: 13.5pt;
+      font-weight: 900;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin: 0;
+    }
+
+    .dossier-subtitle {
+      font-size: 8pt;
+      color: #64748b;
+      margin: 3px 0 0;
+      font-style: italic;
+    }
+
+    /* SUMMARY CALLOUT */
+    .dossier-summary-callout {
+      background: #fdf2f8 !important;
+      border: 1px solid #fbcfe8 !important;
+      border-left: 4px solid #ff2a70 !important;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .summary-callout-tag {
+      font-size: 7pt;
+      font-weight: 900;
+      color: #ffffff;
+      background: #ff2a70;
+      padding: 3px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .summary-callout-text {
+      font-size: 8pt;
+      color: #831843;
+      line-height: 1.45;
+    }
+
+    /* KPI CARDS (4 COLUMNS IN 1 ROW) */
+    .dossier-kpi-grid {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .dossier-kpi-card {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 8px;
+      background: #f8fafc !important;
+      padding: 8px 10px;
+    }
+
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-card-name {
+      font-size: 7pt;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    .kpi-card-pill {
+      font-size: 6.5pt;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .pill-green { background: #dcfce7; color: #15803d; }
+    .pill-pink { background: #fce7f3; color: #be185d; }
+    .pill-blue { background: #e0e7ff; color: #4338ca; }
+    .pill-purple { background: #f3e8ff; color: #7e22ce; }
+
+    .kpi-card-number {
+      font-size: 13pt;
+      font-weight: 900;
+      color: #0f172a;
+      margin: 3px 0 1px;
+    }
+
+    .kpi-unit {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .kpi-card-footer {
+      font-size: 6.8pt;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    /* CHARTS QUAD GRID (2X2 IN PRINT) */
+    .dossier-charts-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .dossier-chart-card {
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 8px;
+      background: #ffffff !important;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 175px;
+    }
+
+    .chart-card-header {
+      margin-bottom: 6px;
+    }
+
+    .chart-card-title {
+      font-size: 8.5pt;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .chart-card-subtitle {
+      font-size: 6.8pt;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    .svg-chart-container {
+      width: 100%;
+      height: 105px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dossier-svg-chart {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-summary-line {
+      font-size: 6.8pt;
+      color: #475569;
+      border-top: 1px dashed #e2e8f0;
+      padding-top: 4px;
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    /* DONUT CHART */
+    .donut-chart-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0;
+    }
+
+    .donut-svg-box {
+      width: 95px;
+      height: 95px;
+      flex-shrink: 0;
+    }
+
+    .donut-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transform: rotate(-90deg);
+    }
+    .donut-svg text {
+      transform: rotate(90deg);
+      transform-origin: 50px 50px;
+    }
+
+    .donut-legend-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .legend-marker {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .legend-info {
+      flex: 1;
+    }
+
+    .legend-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 7pt;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .legend-sub {
+      font-size: 6.2pt;
+      color: #64748b;
+    }
+
+    /* BARS CHART */
+    .bar-chart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .bar-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.2pt;
+    }
+
+    .bar-label-name {
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .bar-value-text {
+      color: #0f172a;
+    }
+    .text-red { color: #dc2626 !important; }
+
+    .bar-track {
+      width: 100%;
+      height: 7px;
+      background: #f1f5f9;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    /* MARGIN BANNER */
+    .dossier-margin-banner {
+      border: 1.5px solid #ff2a70;
+      border-radius: 8px;
+      background: #fff5f8 !important;
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .margin-badge {
+      font-size: 6.5pt;
+      font-weight: 900;
+      color: #ff2a70;
+      background: #ffffff;
+      border: 1px solid #ffd0dc;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .margin-title {
+      font-size: 8.5pt;
+      font-weight: 900;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    .margin-desc {
+      font-size: 6.8pt;
+      color: #64748b;
+    }
+
+    .margin-banner-right {
+      text-align: right;
+    }
+
+    .margin-huge-number {
+      font-size: 20pt;
+      font-weight: 900;
+      color: #ff2a70;
+      line-height: 1;
+      font-family: 'JetBrains Mono', monospace, sans-serif;
+    }
+
+    .margin-huge-sub {
+      font-size: 6pt;
+      font-weight: 800;
+      color: #be185d;
+      margin-top: 2px;
+    }
+
+    /* FOOTER */
+    .dossier-page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+      font-size: 6.5pt;
+      color: #94a3b8;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* MINI HEADER TRANG 2 */
+    .dossier-mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #ff2a70;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .mini-brand {
+      font-size: 8.5pt;
+      font-weight: 900;
+      color: #ff2a70;
+      text-transform: uppercase;
+    }
+
+    .mini-ref {
+      font-size: 7pt;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    /* SECTION BLOCK */
+    .dossier-section-block {
+      margin-bottom: 8px;
+    }
+
+    .section-title-bar {
+      margin-bottom: 6px;
+    }
+
+    .section-title-text {
+      font-size: 9pt;
+      font-weight: 900;
+      color: #0f172a;
+      text-transform: uppercase;
+    }
+
+    .section-title-sub {
+      font-size: 6.8pt;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    /* DATA TABLE */
+    .dossier-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5pt;
+      text-align: left;
+    }
+
+    .dossier-data-table th {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+      font-weight: 800 !important;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      text-transform: uppercase;
+      font-size: 6.8pt;
+    }
+
+    .dossier-data-table td {
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+
+    .tbl-channel-name {
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .tbl-channel-sub {
+      font-size: 6.2pt;
+      color: #64748b;
+    }
+
+    .table-pill {
+      display: inline-block;
+      font-size: 6.5pt;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .pill-pink-solid { background: #ff2a70; color: #ffffff; }
+
+    .table-total-row td {
+      background: #fff5f8 !important;
+      border-top: 2.5px solid #ff2a70 !important;
+      padding: 8px;
+    }
+
+    /* ACTION PLAN */
+    .action-plan-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 8px;
+    }
+
+    .action-plan-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 8px 10px;
+    }
+
+    .action-card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .action-step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ff2a70;
+      color: #ffffff;
+      font-size: 6.5pt;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .action-card-title {
+      font-size: 7.2pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+
+    .action-card-body {
+      font-size: 6.6pt;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    /* AUDIT CERTIFICATION */
+    .dossier-audit-banner {
+      background: #f0fdf4 !important;
+      border: 1.5px solid #bbf7d0 !important;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .audit-seal {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #dcfce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .audit-title {
+      font-size: 7.2pt;
+      font-weight: 900;
+      color: #166534;
+      text-transform: uppercase;
+    }
+
+    .audit-desc {
+      font-size: 6.6pt;
+      color: #15803d;
+      line-height: 1.35;
+      margin-top: 1px;
+    }
+
+    /* SIGNATURES BLOCK */
+    .dossier-signatures-block {
+      display: flex !important;
+      justify-content: space-between;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    .signature-col {
+      width: 30%;
+      text-align: center;
+    }
+
+    .sig-role {
+      font-size: 7.5pt;
+      font-weight: 900;
+      color: #0f172a;
+      text-transform: uppercase;
+    }
+
+    .sig-duty {
+      font-size: 6.5pt;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .sig-sign-space {
+      height: 48px;
+    }
+
+    .sig-author-name {
+      font-size: 8pt;
+      font-weight: 900;
+      color: #0f172a;
+      border-top: 1px dotted #94a3b8;
+      padding-top: 3px;
+      display: inline-block;
+      min-width: 130px;
+    }
+
+    .sig-date {
+      font-size: 6.2pt;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+  }
+
+  
+    /* LUXURY WATERMARK WAVE ART (ẢNH CHÌM BÊN DƯỚI DẠNG KHÁM PHÁ GIÁ TRỊ TỪ DỮ LIỆU) */
+    .watermark-waves-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 280px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: var(--border-radius-window) var(--border-radius-window) 0 0;
+    }
+    .watermark-waves-bg svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .window-header-bar, .workbench-layout {
+      position: relative;
+      z-index: 1;
+    }
+
+  
+    /* SUBTLE INTERNAL WATERMARK ARTWORKS FOR EACH STEP (ẢNH CHÌM BÊN TRONG CÁC BƯỚC KHÔNG GIỐNG BÊN NGOÀI) */
+    .step-watermark-art {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.42;
+      overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .step-watermark-art svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Step 1 Art: Constellation Data Nodes */
+    .wm-step-1 {
+      right: 0;
+      top: 0;
+      width: 380px;
+      height: 280px;
+    }
+
+    /* Step 2 Art: Hexagonal Crystal Scanning Grid */
+    .wm-step-2 {
+      right: 10px;
+      bottom: 0;
+      width: 360px;
+      height: 270px;
+    }
+
+    /* Step 3 Art: Telemetry Polar Radar & Scatter Arcs */
+    .wm-step-3 {
+      right: -20px;
+      top: 10px;
+      width: 390px;
+      height: 310px;
+    }
+
+    /* Step 4 Art: Fibonacci Growth Spiral & Geometric Crest */
+    .wm-step-4 {
+      right: 0;
+      bottom: -10px;
+      width: 400px;
+      height: 300px;
+    }
+
+    /* Ensure card contents sit above watermarks */
+    .clay-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .clay-card > *:not(.step-watermark-art) {
+      position: relative;
+      z-index: 1;
+    }
+
+    @media print {
+      .step-watermark-art {
+        display: none !important;
+      }
+    }
+
+  
+    /* MOUSE SPOTLIGHT GLOW */
+    .mouse-spotlight-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(550px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(255, 42, 112, 0.12), transparent 70%);
+      transition: opacity 0.2s ease;
+    }
+
+    /* DARK MODE STYLES */
+    body.dark-mode {
+      --canvas-bg: #12050f;
+      --outer-bg: #180815;
+      --card-bg: #1e0b1b;
+      --text-dark: #fce7f3;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --pastel-pink-soft: #380e2d;
+      --pastel-pink-border: #5c184a;
+      --pastel-pink-light: #240d21;
+      background: radial-gradient(circle at 15% 15%, #2c0b24 0%, #170514 50%, #0d030c 100%) !important;
+      color: #fce7f3 !important;
+    }
+
+    body.dark-mode .app-window-frame,
+    body.dark-mode .clay-card,
+    body.dark-mode .workbench-sidebar,
+    body.dark-mode .workbench-main,
+    body.dark-mode .window-header-bar,
+    body.dark-mode .ai-assistant-card,
+    body.dark-mode .corner-floating-dot,
+    body.dark-mode .ai-drawer-content {
+      background: #1c0a1a !important;
+      border-color: #4a153b !important;
+      color: #fce7f3 !important;
+    }
+
+    body.dark-mode .step-main-header h2,
+    body.dark-mode .card-title-group h3,
+    body.dark-mode .kpi-number-big,
+    body.dark-mode .window-title-text {
+      color: #ffffff !important;
+    }
+
+    body.dark-mode .step-main-header p,
+    body.dark-mode .card-title-group p,
+    body.dark-mode .step-desc-text {
+      color: #cbd5e1 !important;
+    }
+
+    body.dark-mode .custom-input-box,
+    body.dark-mode .custom-textarea-box,
+    body.dark-mode .custom-select-box {
+      background: #250f23 !important;
+      border-color: #551b44 !important;
+      color: #fce7f3 !important;
+    }
+
+    body.dark-mode .sidebar-nav-item:not(.active) {
+      background: #1c0a1a !important;
+      border-color: #3b1230 !important;
+      color: #cbd5e1 !important;
+    }
+
+    /* INTERACTIVE AI COPILOT DRAWER */
+    .ai-copilot-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 90vw;
+      height: 100vh;
+      background: #ffffff;
+      border-left: 2px solid #ffd0dc;
+      box-shadow: -10px 0 40px rgba(255, 42, 112, 0.15);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ai-copilot-drawer.open {
+      right: 0;
+    }
+
+    .ai-drawer-header {
+      padding: 18px 20px;
+      border-bottom: 1.5px solid #ffe1eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--pastel-pink-light);
+    }
+
+    .ai-drawer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-drawer-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-drawer-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text-dark);
+    }
+    .ai-drawer-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-close-drawer {
+      background: none;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-close-drawer:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--hot-pink);
+    }
+
+    .ai-drawer-chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #fffdfd;
+    }
+    body.dark-mode .ai-drawer-chat-area {
+      background: #180717 !important;
+    }
+
+    .ai-message-bubble {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 90%;
+    }
+    .ai-message-bubble.assistant {
+      background: #ffffff;
+      border: 1px solid #ffd0dc;
+      color: var(--text-dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.05);
+    }
+    body.dark-mode .ai-message-bubble.assistant {
+      background: #250e22 !important;
+      border-color: #551b44 !important;
+      color: #fce7f3 !important;
+    }
+    .ai-message-bubble.user {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-quick-pills-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .btn-quick-pill {
+      background: #ffffff;
+      border: 1px solid #ffccd9;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--hot-pink);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-mode .btn-quick-pill {
+      background: #230d20 !important;
+      border-color: #551b44 !important;
+    }
+    .btn-quick-pill:hover {
+      background: var(--pastel-pink-soft);
+      border-color: var(--hot-pink);
+    }
+
+    .ai-drawer-input-row {
+      padding: 14px 18px;
+      border-top: 1.5px solid #ffe1eb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+    }
+    body.dark-mode .ai-drawer-input-row {
+      background: #1c0a1a !important;
+      border-color: #4a153b !important;
+    }
+
+    .ai-chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid #ffd0dc;
+      border-radius: var(--border-radius-pill);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    body.dark-mode .ai-chat-input {
+      background: #250e22;
+      border-color: #551b44;
+      color: #fce7f3;
+    }
+    .ai-chat-input:focus {
+      border-color: var(--hot-pink);
+    }
+
+    .btn-send-ai {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--hot-pink-gradient);
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 42, 112, 0.35);
+      transition: transform 0.2s;
+    }
+    .btn-send-ai:hover {
+      transform: scale(1.08);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="mouse-spotlight-layer" id="mouse-spotlight" aria-hidden="true"></div>
+
+  <!-- SPARKLE PARTICLES CANVAS -->
+  <canvas id="sparkle-canvas"></canvas>
+
+  <!-- TOP HEADER (CLEAN SCREEN HEADER) -->
+  <header class="top-header-bar">
+    <div class="brand-container">
+      <div class="brand-icon-rounded" id="brand-avatar" onclick="triggerMagicSparkles(window.innerWidth/2, 100, 35)" title="Nhấp để phát sáng lấp lánh!">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <div class="brand-info-col">
+        <h1>DataFlow <span class="brand-badge">Intelligence 2026</span></h1>
+        <p>Nền Tảng Phân Tích Dữ Liệu & Báo Cáo Điều Hành Doanh Nghiệp</p>
+      </div>
+    </div>
+
+    <div class="top-controls-row">
+      <button class="action-btn-pill btn-outline-pill" onclick="window.location.href='/landing'" title="Xem trang giới thiệu Landing Page">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Trang Giới Thiệu
+      </button>
+      <button class="action-btn-pill btn-outline-pill" onclick="resetStudioSession()">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+        </svg>
+        Làm Mới
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APPLICATION WORKBENCH -->
+  <main class="app-window-frame" style="display:none;">
+
+    <!-- LUXURY WATERMARK WAVE ART PATTERN (ẢNH CHÌM BÊN DƯỚI THEO YÊU CẦU) -->
+    <div class="watermark-waves-bg" aria-hidden="true">
+      <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="waveGradGold" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.45" />
+            <stop offset="50%" stop-color="#ff2a70" stop-opacity="0.25" />
+            <stop offset="100%" stop-color="#ffe4ec" stop-opacity="0.0" />
+          </linearGradient>
+          <linearGradient id="waveGradPink" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff2a70" stop-opacity="0.3" />
+            <stop offset="70%" stop-color="#f43f5e" stop-opacity="0.15" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+          </linearGradient>
+          <radialGradient id="cornerGlow" cx="95%" cy="10%" r="65%">
+            <stop offset="0%" stop-color="#ff2a70" stop-opacity="0.18" />
+            <stop offset="45%" stop-color="#f59e0b" stop-opacity="0.08" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+          </radialGradient>
+        </defs>
+        
+        <!-- CORNER GLOW -->
+        <rect width="1440" height="320" fill="url(#cornerGlow)" />
+        
+        <!-- FLOWING TOPO / WATERMARK WAVE CURVES (MATCHING SCREENSHOT) -->
+        <path d="M 500,-40 C 720,80 880,10 1100,120 C 1280,210 1380,180 1480,240 L 1480,-40 Z" fill="url(#waveGradGold)" opacity="0.6" />
+        <path d="M 680,-40 C 850,110 1020,40 1200,160 C 1340,240 1420,200 1500,260 L 1500,-40 Z" fill="url(#waveGradPink)" opacity="0.4" />
+        
+        <!-- LUXURY FLOWING RIBBON STROKE LINES -->
+        <path d="M 380,20 C 580,140 760,60 980,160 C 1180,250 1320,190 1460,260" fill="none" stroke="#d97706" stroke-width="1.6" stroke-opacity="0.45" />
+        <path d="M 430,35 C 630,155 810,75 1030,175 C 1230,265 1370,205 1490,275" fill="none" stroke="#ff2a70" stroke-width="1.8" stroke-opacity="0.38" />
+        <path d="M 480,50 C 680,170 860,90 1080,190 C 1280,280 1410,220 1520,290" fill="none" stroke="#f59e0b" stroke-width="1.4" stroke-opacity="0.4" />
+        <path d="M 540,70 C 740,190 920,110 1130,210 C 1330,300 1450,240 1560,305" fill="none" stroke="#ff6b98" stroke-width="1.2" stroke-opacity="0.35" />
+        <path d="M 600,90 C 800,210 980,130 1190,230 C 1380,315 1490,260 1590,320" fill="none" stroke="#e11d48" stroke-width="1.0" stroke-opacity="0.28" />
+        <path d="M 670,115 C 870,235 1040,155 1250,250 C 1430,330 1530,280 1620,335" fill="none" stroke="#f59e0b" stroke-width="0.8" stroke-opacity="0.25" />
+      </svg>
+    </div>
+
+    
+    <!-- WINDOW SUB-HEADER -->
+    <div class="window-header-bar">
+      <div class="window-header-title">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        Không Gian Khai Thác & Phân Tích Dữ Liệu Thông Minh · DataFlow Studio
+      </div>
+      <div style="font-size:12px; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--hot-pink);"></span>
+        Hệ Thống Trực Tuyến
+      </div>
+    </div>
+
+    <!-- WORKBENCH LAYOUT -->
+    <div class="workbench-layout">
+      
+      <!-- COLLAPSIBLE SIDEBAR -->
+      <aside class="workbench-sidebar" id="workbench-sidebar">
+        <div>
+          <div class="sidebar-top-bar">
+            <div class="sidebar-step-title">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              TIẾN TRÌNH PHÂN TÍCH
+            </div>
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="toggleSidebar()" title="Thu nhỏ thanh phụ">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 4 BƯỚC TUẦN TỰ -->
+          <div class="steps-list">
+            
+            <!-- BƯỚC 1 -->
+            <div class="step-item-card active" id="nav-step-1" onclick="handleStepClick(1)">
+              <div class="step-left-content">
+                <div class="step-icon-box" id="icon-step-1">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                  </svg>
+                </div>
+                <div class="step-meta-col">
+                  <span class="step-title-text">1. Kết Nối Nguồn</span>
+                  <span class="step-desc-text">Bối cảnh & Tệp dữ liệu</span>
+                </div>
+              </div>
+              <span class="step-status-tag" id="badge-step-1">Đang xem</span>
+            </div>
+
+            <!-- BƯỚC 2 -->
+            <div class="step-item-card locked" id="nav-step-2" onclick="handleStepClick(2)">
+              <div class="step-left-content">
+                <div class="step-icon-box" id="icon-step-2">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="step-meta-col">
+                  <span class="step-title-text">2. Làm Sạch</span>
+                  <span class="step-desc-text">Chuẩn hóa cấu trúc</span>
+                </div>
+              </div>
+              <span class="step-status-tag" id="badge-step-2">Khóa</span>
+            </div>
+
+            <!-- BƯỚC 3 -->
+            <div class="step-item-card locked" id="nav-step-3" onclick="handleStepClick(3)">
+              <div class="step-left-content">
+                <div class="step-icon-box" id="icon-step-3">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="step-meta-col">
+                  <span class="step-title-text">3. Phân Tích</span>
+                  <span class="step-desc-text">So sánh & Khai phá</span>
+                </div>
+              </div>
+              <span class="step-status-tag" id="badge-step-3">Khóa</span>
+            </div>
+
+            <!-- BƯỚC 4 -->
+            <div class="step-item-card locked" id="nav-step-4" onclick="handleStepClick(4)">
+              <div class="step-left-content">
+                <div class="step-icon-box" id="icon-step-4">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <div class="step-meta-col">
+                  <span class="step-title-text">4. Báo Cáo</span>
+                  <span class="step-desc-text">Điều hành & Tăng trưởng</span>
+                </div>
+              </div>
+              <span class="step-status-tag" id="badge-step-4">Khóa</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- AI ASSISTANT CARD -->
+        <div class="ai-assistant-card" onclick="openAiCopilotDrawer()" style="cursor:pointer;" title="Nhấp để trò chuyện với Trợ Lý AI Co-Pilot">
+          <div class="ai-assistant-header">
+            <div class="ai-badge-row">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 12a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm12 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm-6 6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2v-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Trợ Lý Trí Tuệ Nhân Tạo</span>
+            </div>
+            <div class="ai-status-indicator"></div>
+          </div>
+          <div class="ai-assistant-bubble" id="ai-status-speech">
+            Chào bạn! Hãy nhập thông tin doanh nghiệp hoặc kết nối bảng tính để bắt đầu phiên phân tích chuyên sâu.
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN WORKSPACE -->
+      <section class="workbench-main">
+        
+        <!-- ========================================== -->
+        <!-- VIEW BƯỚC 1: KẾT NỐI NGUỒN DỮ LIỆU         -->
+        <!-- ========================================== -->
+        <div class="step-view-container" id="view-step-1" style="display:flex; flex-direction:column; gap:20px;">
+          
+          <div class="step-main-header">
+            <div class="step-main-header-left">
+              <h2>Bước 1: Nạp Nguồn Dữ Liệu & Xác Định Bối Cảnh</h2>
+              <p>Cung cấp định hướng kinh doanh và liên kết dữ liệu cần xử lý.</p>
+            </div>
+            <span class="step-progress-indicator">BƯỚC 1 / 4</span>
+          </div>
+
+          <!-- THẺ 1: BỐI CẢNH DOANH NGHIỆP (ĐỂ TRỐNG VALUE THEO YÊU CẦU) -->
+          <div class="clay-card">
+            <div class="card-header-flex">
+              <div class="card-icon-pill">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <div class="card-title-group">
+                <h3>Bối cảnh doanh nghiệp</h3>
+                <p>Câu hỏi của bạn định hướng việc chọn chỉ số và đọc kết quả.</p>
+              </div>
+            </div>
+
+            <!-- LOẠI HÌNH DOANH NGHIỆP -->
+            <div class="form-group-item">
+              <label class="form-label-styled">
+                <span>Loại hình doanh nghiệp <span class="form-label-required">*</span></span>
+              </label>
+              <input type="text" class="custom-input-box" id="biz-type-input" value="" placeholder="Ví dụ: Bán lẻ thời trang, SaaS B2B, chuỗi F&B, dịch vụ logistics...">
+            </div>
+
+            <!-- THÔNG TIN BỔ SUNG -->
+            <div class="form-group-item">
+              <label class="form-label-styled">
+                <span>Thông tin bổ sung</span>
+                <span class="form-label-hint">không bắt buộc</span>
+              </label>
+              <textarea class="custom-textarea-box" id="biz-extra-input" placeholder="Ví dụ: Có 3 kênh bán hàng (Cửa hàng, Website, Sàn TMĐT), đang đánh giá hiệu quả chi phí và tỷ lệ hoàn đơn quý này..."></textarea>
+            </div>
+
+            <!-- VẤN ĐỀ CẦN PHÂN TÍCH -->
+            <div class="form-group-item">
+              <label class="form-label-styled">
+                <span>Vấn đề cần phân tích <span class="form-label-required">*</span></span>
+              </label>
+              <textarea class="custom-textarea-box" id="biz-questions-input" placeholder="Nhập các câu hỏi cần giải đáp (tối đa 8 câu, mỗi câu một dòng):&#10;Ví dụ:&#10;1. Doanh thu theo kênh nào cao nhất?&#10;2. Tỷ lệ hủy/hoàn đơn tập trung ở đâu?&#10;3. Cơ cấu chi phí và biên lợi nhuận gộp theo từng kênh?"></textarea>
+              <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Nhập tối đa 8 câu hỏi, mỗi câu một dòng.</p>
+            </div>
+          </div>
+
+          <!-- THẺ 2: GOOGLE SHEETS -->
+          <div class="clay-card">
+            <div class="card-header-flex">
+              <div class="card-icon-pill">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <line x1="8" y1="13" x2="16" y2="13"></line>
+                  <line x1="8" y1="17" x2="16" y2="17"></line>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="card-title-group">
+                <h3>Google Sheets</h3>
+                <p>Nhập dữ liệu từ một tab bảng tính bằng liên kết chia sẻ.</p>
+              </div>
+            </div>
+
+            <div class="form-group-item">
+              <label class="form-label-styled">
+                <span>Liên kết bảng tính</span>
+              </label>
+              <div class="sheets-input-row">
+                <div class="sheets-input-wrapper">
+                  <div class="sheets-input-icon">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                  </div>
+                  <input type="text" class="custom-input-box" id="sheets-link-input" value="" placeholder="Dán liên kết Google Sheets (https://docs.google.com/spreadsheets/d/...)">
+                </div>
+                <button class="btn-connect-sheets" onclick="connectGoogleSheets()">
+                  Kết nối bảng tính
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <p style="font-size:11.5px; color:var(--text-muted); margin-top:6px; display:flex; align-items:center; gap:6px;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Liên kết cần có quyền xem cho bất kỳ ai có đường dẫn.
+              </p>
+            </div>
+          </div>
+
+          <!-- THẺ TẢI TỆP CSV TRỰC TIẾP -->
+          <div class="clay-card" style="padding:18px 22px; cursor:pointer;" onclick="triggerUploadCsv()">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:14px;">
+                <div class="card-icon-pill">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h4 style="font-size:14px; font-weight:900; color:var(--text-dark);">Tải tệp CSV / TSV từ máy tính</h4>
+                  <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Chọn một hoặc nhiều tệp dữ liệu giao dịch từ thiết bị của bạn</p>
+                </div>
+              </div>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--hot-pink);">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </div>
+          <input type="file" id="csv-file-input" accept=".csv, .tsv, .txt" style="display:none;" onchange="handleFileSelected(event)">
+
+          <!-- PHẦN DỮ LIỆU MẪU Ở GÓC DƯỚI -->
+          <div class="sample-dataset-bottom-row">
+            <button class="btn-sample-dataset-link" onclick="loadDefaultEnterpriseDataset()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              Hoặc thử nghiệm nhanh với dữ liệu mẫu có sẵn (sales_data.csv · 15.000 dòng) ➜
+            </button>
+          </div>
+
+          <!-- PROCEED TO STEP 2 -->
+          <div class="proceed-step-banner">
+            <div class="proceed-banner-left">
+              <h4>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--hot-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Xác Nhận Nguồn Dữ Liệu
+              </h4>
+              <p>Bấm xác nhận để mở khóa quy trình kiểm tra và làm sạch cấu trúc dữ liệu.</p>
+            </div>
+            <button class="btn-unlock-next" onclick="unlockAndProceed(2)">
+              Mở Khóa Bước 2 (Làm Sạch)
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW BƯỚC 2: LÀM SẠCH DỮ LIỆU              -->
+        <!-- ========================================== -->
+        <div class="step-view-container" id="view-step-2" style="display:none; flex-direction:column; gap:20px;">
+          
+          <div class="step-main-header">
+            <div class="step-main-header-left">
+              <h2>Bước 2: Kiểm Định Chất Lượng & Làm Sạch Dữ Liệu</h2>
+              <p>Rà soát các bản ghi dị biệt, chuẩn hóa định dạng số tiền VND và ngày tháng giao dịch.</p>
+            </div>
+            <span class="step-progress-indicator">BƯỚC 2 / 4</span>
+          </div>
+
+          <div class="clay-card">
+            <div class="card-header-flex">
+              <div class="card-icon-pill">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div class="card-title-group">
+                <h3>Bảng Quy Tắc Tiền Xử Lý Dữ Liệu</h3>
+                <p>Hệ thống tự động phát hiện và đề xuất các tác vụ dọn dẹp tối ưu.</p>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+              <label style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fffafd; border:1px solid #ffd8e4; border-radius:14px; cursor:pointer;">
+                <input type="checkbox" checked onchange="toggleCleaningRule('nulls')" style="width:16px; height:16px; accent-color:var(--hot-pink);">
+                <div style="flex:1;">
+                  <b style="font-size:13px; color:var(--text-dark);">Xử lý giá trị rỗng (Null/Empty values)</b>
+                  <p style="font-size:11.5px; color:var(--text-muted);">Tự động điền giá trị chuẩn hoặc phân tách dòng thiếu trường dữ liệu doanh số trọng yếu.</p>
+                </div>
+                <span style="font-size:11px; font-weight:800; background:var(--pastel-pink-soft); color:var(--berry-dark); padding:3px 10px; border-radius:9999px; border:1px solid var(--pastel-pink-border);">0 Lỗi Tìm Thấy</span>
+              </label>
+
+              <label style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fffafd; border:1px solid #ffd8e4; border-radius:14px; cursor:pointer;">
+                <input type="checkbox" checked onchange="toggleCleaningRule('format')" style="width:16px; height:16px; accent-color:var(--hot-pink);">
+                <div style="flex:1;">
+                  <b style="font-size:13px; color:var(--text-dark);">Chuẩn hóa định dạng số tiền (Net_Sales_VND, Cost_VND, Profit_VND)</b>
+                  <p style="font-size:11.5px; color:var(--text-muted);">Chuyển đổi ký tự phân cách thập phân theo chuẩn quốc tế và loại bỏ khoảng trắng dư thừa.</p>
+                </div>
+                <span style="font-size:11px; font-weight:800; background:var(--pastel-pink-soft); color:var(--berry-dark); padding:3px 10px; border-radius:9999px; border:1px solid var(--pastel-pink-border);">Đã Chuẩn Hóa</span>
+              </label>
+
+              <label style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fffafd; border:1px solid #ffd8e4; border-radius:14px; cursor:pointer;">
+                <input type="checkbox" checked onchange="toggleCleaningRule('datetime')" style="width:16px; height:16px; accent-color:var(--hot-pink);">
+                <div style="flex:1;">
+                  <b style="font-size:13px; color:var(--text-dark);">Đồng bộ chuỗi thời gian (Order_Date)</b>
+                  <p style="font-size:11.5px; color:var(--text-muted);">Quy chuẩn ngày đặt hàng về định dạng YYYY-MM-DD phục vụ phân tích xu hướng 12 tháng.</p>
+                </div>
+                <span style="font-size:11px; font-weight:800; background:var(--pastel-pink-soft); color:var(--berry-dark); padding:3px 10px; border-radius:9999px; border:1px solid var(--pastel-pink-border);">Khớp 100%</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- BẢNG XEM TRƯỚC DỮ LIỆU ĐÃ LÀM SẠCH -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:12px;">Xem trước dữ liệu đã làm sạch (Mẫu 5 dòng đầu)</h3>
+            <div class="table-rounded-wrapper">
+              <table class="styled-profile-table">
+                <thead>
+                  <tr>
+                    <th>Order_ID</th>
+                    <th>Order_Date</th>
+                    <th>Customer_ID</th>
+                    <th>Region</th>
+                    <th>City</th>
+                    <th>Segment</th>
+                    <th>Channel</th>
+                    <th>Net_Sales_VND</th>
+                    <th>Returned</th>
+                  </tr>
+                </thead>
+                <tbody id="preview-cleaned-tbody">
+                  <!-- DYNAMICALLY POPULATED -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PROCEED TO STEP 3 -->
+          <div class="proceed-step-banner">
+            <div class="proceed-banner-left">
+              <h4>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--hot-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Dữ Liệu Đã Đạt Chuẩn Phân Tích
+              </h4>
+              <p>15.000 dòng dữ liệu đã qua tiền xử lý, sẵn sàng tính toán chỉ số thống kê & nhóm.</p>
+            </div>
+            <button class="btn-unlock-next" onclick="unlockAndProceed(3)">
+              Mở Khóa Bước 3 (Phân Tích)
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW BƯỚC 3: PHÂN TÍCH DỮ LIỆU CHUYÊN SÂU   -->
+        <!-- ========================================== -->
+        <div class="step-view-container" id="view-step-3" style="display:none; flex-direction:column; gap:20px;">
+          
+          <div class="step-main-header">
+            <div class="step-main-header-left">
+              <h2>Bước 3: Phân Tích Đa Chiều & Hồ Sơ Dữ Liệu</h2>
+              <p>Khai phá tương quan dữ liệu, kiểm tra cơ cấu doanh thu theo nhóm và đánh giá chất lượng trường.</p>
+            </div>
+            <span class="step-progress-indicator">BƯỚC 3 / 4</span>
+          </div>
+
+          <!-- THẺ 1: PHÂN TÍCH THEO BỐI CẢNH -->
+          <div class="clay-card">
+            <div class="card-header-flex">
+              <div class="card-icon-pill">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+              </div>
+              <div class="card-title-group">
+                <h3>Khung Đánh Giá Hiệu Suất Đa Kênh & Cơ Cấu Đơn Hàng</h3>
+                <p>sales_data.csv · 1 bộ dữ liệu nguồn · 15.001 dòng tổng thể</p>
+              </div>
+            </div>
+
+            <div style="background:#fffafd; border:1px solid #ffd8e4; border-radius:14px; padding:14px 18px; font-size:12.5px; line-height:1.6; color:var(--text-sub);">
+              <b style="color:var(--text-dark);">Tóm lược bối cảnh phân tích:</b><br>
+              Dữ liệu bao gồm 15.000 giao dịch thương mại hoàn tất trong năm 2025. Trọng tâm đánh giá hướng vào sự dịch chuyển doanh số giữa các kênh (In-Store, Web App, Sàn TMĐT), kiểm soát tỷ lệ hoàn đơn (Returned) và đo lường độ phân tán doanh thu thực tế (Net Sales) nhằm bảo vệ biên lợi nhuận hoạt động.
+            </div>
+          </div>
+
+          <!-- BỘ DỮ LIỆU ĐANG XEM -->
+          <div class="clay-card" style="padding:16px 20px;">
+            <label style="font-size:11.5px; font-weight:800; color:var(--text-muted); display:block; margin-bottom:6px;">BỘ DỮ LIỆU ĐANG XEM</label>
+            <select class="custom-select-box" style="font-weight:700;">
+              <option selected>Bộ 1 — sales_data.csv (15.001 dòng nguồn · Đã xác thực 100%)</option>
+            </select>
+          </div>
+
+          <!-- 3 THẺ TỔNG HỢP SỐ LIỆU -->
+          <div class="summary-tiles-row">
+            <div class="stat-tile-card">
+              <span class="stat-tile-label">Dòng dữ liệu</span>
+              <div class="stat-tile-number">15.000</div>
+            </div>
+            <div class="stat-tile-card">
+              <span class="stat-tile-label">Số cột</span>
+              <div class="stat-tile-number">23</div>
+            </div>
+            <div class="stat-tile-card">
+              <span class="stat-tile-label">Cột dạng số</span>
+              <div class="stat-tile-number">10</div>
+            </div>
+          </div>
+
+          <!-- SO SÁNH THEO NHÓM -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:14px;">So sánh theo nhóm</h3>
+            
+            <div class="compare-filters-row">
+              <div>
+                <label style="font-size:11.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Nhóm theo</label>
+                <select class="custom-select-box" id="select-group-by" onchange="updateGroupCompare()">
+                  <option value="Returned" selected>Returned (Trạng thái giao nhận)</option>
+                  <option value="Channel">Channel (Kênh bán hàng)</option>
+                  <option value="Segment">Segment (Phân khúc khách hàng)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:11.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Phép tổng hợp</label>
+                <select class="custom-select-box">
+                  <option selected>Tổng (Sum)</option>
+                  <option>Trung bình (Average)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size:11.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">Cột số</label>
+                <select class="custom-select-box">
+                  <option selected>Net_Sales_VND (Doanh thu thuần)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- THANH TRỰC QUAN HÓA SO SÁNH -->
+            <div class="horizontal-bars-container" id="group-compare-bars">
+              <!-- DYNAMIC -->
+            </div>
+            <p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;" id="group-compare-caption">2 nhóm theo giá trị giảm dần.</p>
+          </div>
+
+          <!-- NHẬN XÉT TỰ ĐỘNG CHUYÊN NGHIỆP -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:10px;">Nhận xét tự động từ AI</h3>
+            <ul class="insights-bullets-list">
+              <li>
+                <span style="color:var(--hot-pink); font-weight:bold;">•</span>
+                <span><b>Nhóm đơn thành công (Returned: "Không")</b> chiếm <b>96,3% tổng doanh thu</b> toàn hệ thống (đạt 40.307.721.000 VNĐ). Tỷ lệ hàng đổi trả được kiểm soát tốt ở mức 3,7% (1.559.493.000 VNĐ), chủ yếu phát sinh tại các đợt flash sale trên sàn TMĐT.</span>
+              </li>
+              <li>
+                <span style="color:var(--hot-pink); font-weight:bold;">•</span>
+                <span>Chỉ số doanh thu ròng trên từng giao dịch <b>"Net_Sales_VND"</b> có giá trị bình quân đạt <b>2.791.147 VNĐ/đơn</b>, dao động từ 28.000 VNĐ đến 42.900.000 VNĐ. Khách hàng phân khúc B2B/Doanh nghiệp có quy mô đơn bình quân cao hơn 3,8 lần so với bán lẻ cá nhân.</span>
+              </li>
+              <li>
+                <span style="color:var(--hot-pink); font-weight:bold;">•</span>
+                <span>Toàn bộ 15.000 dòng dữ liệu đạt độ tin cậy thống kê 100%, không ghi nhận giá trị rỗng (null) ở các trường tài chính cốt lõi, bảo đảm cơ sở dữ liệu vững chắc cho mô hình dự báo.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- THỐNG KÊ THEO CỘT -->
+          <div class="clay-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark);">Thống kê theo cột (Data Profile)</h3>
+                <p style="font-size:11.5px; color:var(--text-muted);">Ứng dụng nhận dạng kiểu dữ liệu theo định dạng quốc tế chuẩn.</p>
+              </div>
+              <select class="custom-select-box" style="width:180px; font-size:11.5px;">
+                <option selected>Định dạng: Quốc tế · 1,234.56</option>
+              </select>
+            </div>
+
+            <div class="table-rounded-wrapper">
+              <table class="styled-profile-table">
+                <thead>
+                  <tr>
+                    <th>Cột</th>
+                    <th>Kiểu dữ liệu</th>
+                    <th>Ô trống</th>
+                    <th>Giá trị khác nhau</th>
+                    <th>Trung bình</th>
+                    <th>Nhỏ nhất</th>
+                    <th>Lớn nhất</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Order_ID</td><td>Văn bản / Định danh</td><td>0</td><td>15.000</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>Order_Date</td><td>Chuỗi ngày tháng</td><td>0</td><td>712</td><td>—</td><td>2025-01-02</td><td>2025-12-31</td></tr>
+                  <tr><td>Customer_ID</td><td>Văn bản / Mã KH</td><td>0</td><td>3.057</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>Region</td><td>Danh mục phân loại</td><td>0</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>City</td><td>Danh mục địa bàn</td><td>0</td><td>13</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>Segment</td><td>Phân khúc KH</td><td>0</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>Channel</td><td>Kênh phân phối</td><td>0</td><td>3</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>Net_Sales_VND</td><td>Số thực (VND)</td><td>0</td><td>6.820</td><td>2.791.147</td><td>28.000</td><td>42.900.000</td></tr>
+                  <tr><td>Returned</td><td>Logic nhị phân</td><td>0</td><td>2</td><td>—</td><td>—</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PROCEED TO STEP 4 -->
+          <div class="proceed-step-banner">
+            <div class="proceed-banner-left">
+              <h4>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--hot-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Hoàn Thành Khảo Sát & Phân Tích
+              </h4>
+              <p>Chỉ số thống kê đã được kiểm chứng. Bấm để tổng hợp Dashboard KPI và xuất báo cáo điều hành.</p>
+            </div>
+            <button class="btn-unlock-next" onclick="unlockAndProceed(4)">
+              Xác Nhận & Mở Khóa Bước 4 ➜
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW BƯỚC 4: BÁO CÁO ĐIỀU HÀNH & KPI        -->
+        <!-- ========================================== -->
+        <div class="step-view-container" id="view-step-4" style="display:none; flex-direction:column; gap:20px;">
+          
+          <!-- FORMAL CORPORATE PRINT HEADER (VISIBLE ONLY IN PRINT / PDF) -->
+          <div class="print-formal-header">
+            <div class="print-formal-header-top">
+              <div>
+                <div class="print-header-brand-title">DATAFLOW ENTERPRISE BUSINESS INTELLIGENCE</div>
+                <div class="print-header-brand-sub">HỆ THỐNG PHÂN TÍCH HIỆU SUẤT KINH DOANH & DỮ LIỆU ĐA KÊNH TOÀN DIỆN</div>
+              </div>
+              <div class="print-header-meta-box">
+                <div><b>MÃ BÁO CÁO:</b> DF-RP-2025-Q4</div>
+                <div><b>NGÀY BAN HÀNH:</b> 17/11/2026</div>
+                <div><b>PHÂN LOẠI:</b> Báo Cáo Quản Trị Nội Bộ (Confidential)</div>
+              </div>
+            </div>
+            <div class="print-main-doc-title">
+              <h1>BÁO CÁO TỔNG HỢP HIỆU SUẤT KINH DOANH & ĐỊNH HƯỚNG TĂNG TRƯỞNG</h1>
+              <p>Kỳ kiểm toán đối soát: Tháng 12/2025 · Tập mẫu chuẩn hóa: 15.000 giao dịch thương mại (sales_data.csv)</p>
+            </div>
+          </div>
+
+          <!-- WEB SCREEN HEADER (HIDDEN IN PRINT) -->
+          <div class="step-main-header">
+            <div class="step-main-header-left">
+              <h2>Bước 4: Báo Cáo Tổng Hợp & Đề Xuất Chiến Lược</h2>
+              <p>Dashboard hiệu suất tài chính, cơ cấu chi phí kênh và kế hoạch tăng trưởng quý tới.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <button class="action-btn-pill btn-pink-gradient" onclick="printReport()" title="In trực tiếp hoặc Lưu thành file PDF chuẩn A4">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                In Báo Cáo (PDF)
+              </button>
+              <span class="step-progress-indicator">BƯỚC 4 / 4</span>
+            </div>
+          </div>
+
+          <!-- TOP EXECUTIVE NOTICE -->
+          <div style="background:linear-gradient(90deg, #fff5f8 0%, #ffffff 100%); border:1.5px solid #ffd0dc; border-radius:16px; padding:14px 20px; font-size:13px; color:var(--berry-dark); display:flex; align-items:center; gap:10px;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--hot-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div>
+              <b>Tóm tắt điều hành (Executive Summary):</b> Toàn bộ chỉ số tài chính và đóng góp từng kênh đã được đối soát tự động từ 15.000 giao dịch. Tỷ suất biên lợi nhuận gộp toàn chuỗi đạt <b>19,2%</b>, chi phí vận hành được tối ưu giảm 61,3% theo chu kỳ sau tháng cao điểm.
+            </div>
+          </div>
+
+          <!-- DASHBOARD KPI KINH DOANH -->
+          <div class="clay-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h3 style="font-size:16px; font-weight:900; color:var(--text-dark);">Dashboard KPI kinh doanh</h3>
+                <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Tháng 12/2025 · 65 dòng đối chiếu · sales_data.csv</p>
+                <div class="print-kpi-meta-text">Tập mẫu đối soát: 15.000 giao dịch nguồn · Kỳ báo cáo: Tháng 12/2025 · Đơn vị tính: VNĐ</div>
+              </div>
+
+              <div class="web-only-selectors" style="display:flex; gap:10px; align-items:center;">
+                <div>
+                  <span style="font-size:10px; font-weight:700; color:var(--text-muted); display:block;">Bộ dữ liệu</span>
+                  <select class="custom-select-box" style="padding:6px 12px; font-size:12px; min-width:140px;">
+                    <option selected>sales_data.csv</option>
+                  </select>
+                </div>
+                <div>
+                  <span style="font-size:10px; font-weight:700; color:var(--text-muted); display:block;">Kỳ báo cáo</span>
+                  <select class="custom-select-box" style="padding:6px 12px; font-size:12px; min-width:140px;">
+                    <option selected>Tháng 12/2025</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 TILES KPI: LOCKED INTO 1 HORIZONTAL ROW IN PRINT -->
+            <div class="dashboard-kpi-banner">
+              <div class="kpi-tile-box">
+                <div class="kpi-tile-title">Số đơn hàng</div>
+                <div class="kpi-tile-value">65 đơn</div>
+                <div style="font-size:11px; color:var(--text-muted);">Hoàn tất giao nhận</div>
+                <div class="kpi-tile-sub" style="color:var(--hot-pink);">98.5% Đúng hạn</div>
+              </div>
+
+              <div class="kpi-tile-box">
+                <div class="kpi-tile-title">Doanh thu thuần</div>
+                <div class="kpi-tile-value">191.107.000</div>
+                <div style="font-size:11px; color:var(--text-muted);">Net_Sales_VND</div>
+                <div class="kpi-tile-sub">-59,8% so với T11/2025</div>
+              </div>
+
+              <div class="kpi-tile-box">
+                <div class="kpi-tile-title">Lợi nhuận gộp</div>
+                <div class="kpi-tile-value">36.618.000</div>
+                <div style="font-size:11px; color:var(--text-muted);">Profit_VND</div>
+                <div class="kpi-tile-sub">-52,0% so với T11/2025</div>
+              </div>
+
+              <div class="kpi-tile-box">
+                <div class="kpi-tile-title">Chi phí vận hành</div>
+                <div class="kpi-tile-value">154.489.000</div>
+                <div style="font-size:11px; color:var(--text-muted);">Cost_VND</div>
+                <div class="kpi-tile-sub">-61,3% so với T11/2025</div>
+              </div>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted);">Ghi chú kiểm toán: Tốc độ giảm chi phí (-61,3%) sâu hơn tốc độ điều chỉnh doanh thu (-59,8%), nhờ đó bảo toàn biên lợi nhuận gộp ở mức 19,2%.</p>
+          </div>
+
+          <!-- LƯỚI 4 BIỂU ĐỒ CON (2X2 TRONG BẢN IN) -->
+          <div class="charts-quad-grid">
+            
+            <!-- BIỂU ĐỒ 1: DOANH THU THEO THÁNG (LINE TREND HỒNG) -->
+            <div class="quad-chart-card">
+              <div>
+                <h4 style="font-size:14px; font-weight:900; color:var(--text-dark);">Doanh thu theo tháng</h4>
+                <p style="font-size:11.5px; color:var(--text-muted);">Net_Sales_VND · Chuỗi 12 tháng đối chiếu 2025</p>
+              </div>
+              <div style="flex:1; width:100%; position:relative; min-height:160px; margin:10px 0;">
+                <canvas id="monthly-trend-canvas" style="width:100%; height:160px; display:block;"></canvas>
+              </div>
+              <div style="font-size:11px; font-weight:800; color:var(--hot-pink);">
+                ▶ Đỉnh điểm doanh thu: Tháng 11 (475,5 triệu VNĐ)
+              </div>
+            </div>
+
+            <!-- BIỂU ĐỒ 2: CƠ CẤU CHI PHÍ -->
+            <div class="quad-chart-card">
+              <div>
+                <h4 style="font-size:14px; font-weight:900; color:var(--text-dark);">Cơ cấu chi phí theo kênh</h4>
+                <p style="font-size:11.5px; color:var(--text-muted);">Tổng chi phí kỳ báo cáo: 154.489.000 VNĐ</p>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; flex:1; margin-top:10px;">
+                <div style="width:140px; height:140px; position:relative; flex-shrink:0;">
+                  <canvas id="cost-donut-canvas" style="width:100%; height:100%; display:block;"></canvas>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:11.5px; flex:1; margin-left:14px;">
+                  <div>
+                    <div style="display:flex; justify-content:space-between;">
+                      <span><span style="color:#ff2a70;">■</span> Cửa hàng trực tiếp</span>
+                      <b>48,6%</b>
+                    </div>
+                    <div style="font-size:10.5px; color:var(--text-muted); margin-left:12px;">75.127.000 VNĐ</div>
+                  </div>
+
+                  <div>
+                    <div style="display:flex; justify-content:space-between;">
+                      <span><span style="color:#a855f7;">■</span> Website / App Online</span>
+                      <b>37,2%</b>
+                    </div>
+                    <div style="font-size:10.5px; color:var(--text-muted); margin-left:12px;">57.538.000 VNĐ</div>
+                  </div>
+
+                  <div>
+                    <div style="display:flex; justify-content:space-between;">
+                      <span><span style="color:#ff9eb8;">■</span> Sàn TMĐT</span>
+                      <b>14,1%</b>
+                    </div>
+                    <div style="font-size:10.5px; color:var(--text-muted); margin-left:12px;">21.824.000 VNĐ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BIỂU ĐỒ 3: ĐÓNG GÓP DOANH THU THEO KÊNH -->
+            <div class="quad-chart-card">
+              <div>
+                <h4 style="font-size:14px; font-weight:900; color:var(--text-dark);">Đóng góp doanh thu thuần</h4>
+                <p style="font-size:11.5px; color:var(--text-muted);">Theo kênh bán hàng (Channel)</p>
+              </div>
+              <div class="horizontal-bars-container" style="margin-top:14px;">
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Cửa hàng trực tiếp</span>
+                  <div class="hbar-track">
+                    <div class="hbar-fill-pink" style="width:91%;"></div>
+                  </div>
+                  <span class="hbar-value-text">91.324.000</span>
+                </div>
+
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Website / App</span>
+                  <div class="hbar-track">
+                    <div class="hbar-fill-pink" style="width:73%;"></div>
+                  </div>
+                  <span class="hbar-value-text">73.526.000</span>
+                </div>
+
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Sàn TMĐT</span>
+                  <div class="hbar-track">
+                    <div class="hbar-fill-pink" style="width:26%;"></div>
+                  </div>
+                  <span class="hbar-value-text">26.257.000</span>
+                </div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Kênh Cửa hàng trực tiếp và Website đóng góp 86,3% tổng doanh thu chuỗi.</p>
+            </div>
+
+            <!-- BIỂU ĐỒ 4: BIẾN ĐỘNG SO VỚI THÁNG TRƯỚC -->
+            <div class="quad-chart-card">
+              <div>
+                <h4 style="font-size:14px; font-weight:900; color:var(--text-dark);">Nhóm làm thay đổi doanh thu (MoM)</h4>
+                <p style="font-size:11.5px; color:var(--text-muted);">Tháng 11/2025 → Tháng 12/2025 · Channel</p>
+                <div style="font-size:11.5px; font-weight:800; color:#e11d48; margin-top:2px;">
+                  Từ 475.557.000 xuống 191.107.000 · Giảm 284.450.000 VNĐ
+                </div>
+              </div>
+
+              <div class="horizontal-bars-container" style="margin-top:14px;">
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Cửa hàng trực tiếp</span>
+                  <div class="hbar-track" style="background:#f3e8ff;">
+                    <div style="height:100%; width:85%; background:#8b5cf6; border-radius:9999px;"></div>
+                  </div>
+                  <span class="hbar-value-text" style="color:#e11d48;">-145.072.000</span>
+                </div>
+
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Website / App</span>
+                  <div class="hbar-track" style="background:#f3e8ff;">
+                    <div style="height:100%; width:55%; background:#8b5cf6; border-radius:9999px;"></div>
+                  </div>
+                  <span class="hbar-value-text" style="color:#e11d48;">-78.960.000</span>
+                </div>
+
+                <div class="hbar-item">
+                  <span class="hbar-label" style="width:115px;">Sàn TMĐT</span>
+                  <div class="hbar-track" style="background:#f3e8ff;">
+                    <div style="height:100%; width:42%; background:#8b5cf6; border-radius:9999px;"></div>
+                  </div>
+                  <span class="hbar-value-text" style="color:#e11d48;">-60.418.000</span>
+                </div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Mức giảm chu kỳ sau chiến dịch Black Friday Tháng 11 diễn ra đồng đều trên cả 3 kênh.</p>
+            </div>
+
+          </div>
+
+          <!-- TỶ LỆ LỢI NHUẬN TRÊN DOANH THU -->
+          <div class="clay-card" style="padding:16px 22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:14px; font-weight:800; color:var(--text-dark);">Tỷ lệ lợi nhuận trên doanh thu (Biên lợi nhuận gộp)</span>
+                <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Đạt mục tiêu quản trị tài chính doanh nghiệp duy trì trên 18,0%.</p>
+              </div>
+              <span style="font-size:26px; font-weight:900; color:var(--hot-pink); font-family:var(--font-mono);">19,2%</span>
+            </div>
+          </div>
+
+          <!-- PAGE BREAK ANCHOR: KẾT THÚC TRANG 1 TRONG BẢN IN, BẮT ĐẦU TRANG 2 SANG TRỌNG -->
+          <div class="page-break-anchor"></div>
+
+          <!-- BẢNG CƠ CẤU TÀI CHÍNH ĐA KÊNH CHI TIẾT (HIỂN THỊ CHUẨN MỰC TRÊN BẢN IN & MÀN HÌNH) -->
+          <div class="clay-card print-formal-table-section">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:6px;">Bảng Tổng Hợp Chỉ Số Tài Chính & Đóng Góp Kênh Bán Hàng</h3>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Dữ liệu đối chiếu thực tế Tháng 12/2025 (Đơn vị tính: VNĐ)</p>
+            
+            <table class="formal-print-table">
+              <thead>
+                <tr>
+                  <th>Kênh Bán Hàng</th>
+                  <th style="text-align:right;">Doanh Thu Thuần</th>
+                  <th style="text-align:center;">Tỷ Trọng</th>
+                  <th style="text-align:right;">Chi Phí Vận Hành</th>
+                  <th style="text-align:right;">Lợi Nhuận Gộp</th>
+                  <th style="text-align:center;">Biên Gộp</th>
+                  <th style="text-align:center;">Tỷ Lệ Hoàn</th>
+                  <th>Đánh Giá Quản Trị</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Cửa hàng trực tiếp (In-Store)</b></td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">91.324.000</td>
+                  <td style="text-align:center;">47,8%</td>
+                  <td style="text-align:right; font-family:var(--font-mono);">75.127.000</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">16.197.000</td>
+                  <td style="text-align:center; font-weight:700;">17,7%</td>
+                  <td style="text-align:center;">1,2%</td>
+                  <td>Kênh đóng góp doanh thu lớn nhất</td>
+                </tr>
+                <tr>
+                  <td><b>Website & Ứng dụng Online</b></td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">73.526.000</td>
+                  <td style="text-align:center;">38,5%</td>
+                  <td style="text-align:right; font-family:var(--font-mono);">57.538.000</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">15.988.000</td>
+                  <td style="text-align:center; font-weight:700; color:var(--hot-pink);">21,7%</td>
+                  <td style="text-align:center;">1,9%</td>
+                  <td>Biên lợi nhuận ròng cao nhất chuỗi</td>
+                </tr>
+                <tr>
+                  <td><b>Sàn TMĐT (Shopee/TikTok)</b></td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">26.257.000</td>
+                  <td style="text-align:center;">13,7%</td>
+                  <td style="text-align:right; font-family:var(--font-mono);">21.824.000</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">4.433.000</td>
+                  <td style="text-align:center; font-weight:700;">16,9%</td>
+                  <td style="text-align:center; color:#e11d48; font-weight:700;">3,7%</td>
+                  <td>Cần tối ưu giảm tỷ lệ hoàn đơn</td>
+                </tr>
+                <tr class="total-row">
+                  <td><b>TỔNG CỘNG TOÀN CHUỖI</b></td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:900;">191.107.000</td>
+                  <td style="text-align:center; font-weight:900;">100,0%</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:900;">154.489.000</td>
+                  <td style="text-align:right; font-family:var(--font-mono); font-weight:900;">36.618.000</td>
+                  <td style="text-align:center; font-weight:900;">19,2%</td>
+                  <td style="text-align:center; font-weight:900;">2,1%</td>
+                  <td>Bảo toàn mục tiêu lợi nhuận</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- PHÂN TÍCH CHUYÊN ĐỀ SÂU SẮC -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:10px;">Phân tích chuyên đề quản trị</h3>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:#fffafd; border:1px solid #ffd8e4; border-radius:12px; padding:12px 16px;">
+                <div style="font-size:13px; font-weight:800; color:var(--text-dark);">Chuyên đề 1 · Hiệu quả kênh Website tự chủ so với Sàn TMĐT</div>
+                <p style="font-size:12px; line-height:1.55; color:var(--text-sub); margin-top:3px;">
+                  Mặc dù doanh thu kênh Website/App đạt 73,5 triệu (thấp hơn Cửa hàng trực tiếp), nhưng tỷ suất lợi nhuận gộp trên Website cao hơn 4,0% (đạt 21,7%) nhờ không chịu chi phí thuê mặt bằng vật lý và không phải trích 10-15% chiết khấu sàn. Đây là kênh chiến lược cần dồn ngân sách marketing chuyển đổi số trong năm 2026.
+                </p>
+              </div>
+
+              <div style="background:#fffafd; border:1px solid #ffd8e4; border-radius:12px; padding:12px 16px;">
+                <div style="font-size:13px; font-weight:800; color:var(--text-dark);">Chuyên đề 2 · Kiểm soát chi phí cố định tại điểm bán (In-Store)</div>
+                <p style="font-size:12px; line-height:1.55; color:var(--text-sub); margin-top:3px;">
+                  Chi phí cửa hàng vật lý chiếm đến 48,6% tổng chi phí toàn chuỗi (75,1 triệu). Cần tối ưu hóa định biên ca làm việc của nhân viên và liên kết mô hình Click & Collect (đặt hàng trực tuyến, nhận hàng tại cửa hàng) nhằm gia tăng doanh thu trên mỗi m² sàn bán hàng.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- KẾT LUẬN CHIẾN LƯỢC -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:8px;">Kết luận điều hành</h3>
+            <ul class="insights-bullets-list">
+              <li>
+                <span style="color:var(--hot-pink); font-weight:bold;">✔</span>
+                <span><b>Thích ứng chu kỳ xuất sắc:</b> Sau đợt cao điểm Tháng 11 (đạt 475,5 triệu), doanh số Tháng 12 điều chỉnh tự nhiên về 191,1 triệu. Đơn vị đã chủ động cắt giảm chi phí 61,3%, nhờ đó tỷ lệ lợi nhuận gộp vẫn giữ vững ở mức 19,2%.</span>
+              </li>
+              <li>
+                <span style="color:var(--hot-pink); font-weight:bold;">✔</span>
+                <span><b>Chất lượng dòng tiền:</b> Kênh phân phối In-Store và Web App đóng góp trên 86% tổng doanh thu và có tỷ lệ đơn hoàn trả dưới 2,1%, tạo nguồn tiền mặt ổn định cho hoạt động mua sắm hàng hóa chuẩn bị mùa Tết.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ĐỀ XUẤT HÀNH ĐỘNG -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:10px;">Đề xuất kế hoạch hành động</h3>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:#fff5f8; border:1px solid #ffd0dc; border-radius:12px; padding:12px 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:13px; color:var(--berry-dark);">Triển khai chương trình tri ân khách hàng thân thiết trên Web App</b>
+                  <span style="font-size:10px; font-weight:800; background:var(--pastel-pink-soft); color:var(--berry-dark); padding:2px 8px; border-radius:9999px;">Ưu tiên cao (30 ngày)</span>
+                </div>
+                <p style="font-size:11.5px; color:var(--berry-dark); margin-top:3px;">Gửi thông báo voucher qua SMS/App cho 3.057 khách hàng cũ nhằm kích cầu tái mua hàng sau đợt trầm lắng Tháng 12. Mục tiêu: Tăng trưởng doanh số Website 25% trong Q1/2026.</p>
+              </div>
+
+              <div style="background:#fffafd; border:1px solid #ffd8e4; border-radius:12px; padding:12px 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:13px; color:var(--text-dark);">Tái đàm phán chính sách phí vận chuyển và hoa hồng sàn TMĐT</b>
+                  <span style="font-size:10px; font-weight:800; background:#f1f5f9; color:var(--text-sub); padding:2px 8px; border-radius:9999px;">Ưu tiên trung bình (60 ngày)</span>
+                </div>
+                <p style="font-size:11.5px; color:var(--text-sub); margin-top:3px;">Chuyển đổi các đơn hàng giá trị cao sang giao hàng hỏa tốc để hạn chế tỷ lệ hủy đơn trên sàn. Mục tiêu: Kéo giảm tỷ lệ hoàn đơn sàn TMĐT từ 3,7% xuống dưới 1,8%.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- NGUỒN VÀ CHẤT LƯỢNG DỮ LIỆU -->
+          <div class="clay-card">
+            <h3 style="font-size:14.5px; font-weight:900; color:var(--text-dark); margin-bottom:10px;">Kiểm định nguồn và chất lượng dữ liệu</h3>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;">
+              <div style="background:#fafbfc; padding:10px; border-radius:12px; text-align:center; border:1px solid #e2e8f0;">
+                <div style="font-size:10.5px; color:var(--text-muted);">Bộ dữ liệu</div>
+                <div style="font-size:17px; font-weight:900; color:var(--text-dark); margin-top:2px;">1</div>
+              </div>
+              <div style="background:#fafbfc; padding:10px; border-radius:12px; text-align:center; border:1px solid #e2e8f0;">
+                <div style="font-size:10.5px; color:var(--text-muted);">Dòng đã phân tích</div>
+                <div style="font-size:17px; font-weight:900; color:var(--text-dark); margin-top:2px;">15.000</div>
+              </div>
+              <div style="background:#fafbfc; padding:10px; border-radius:12px; text-align:center; border:1px solid #e2e8f0;">
+                <div style="font-size:10.5px; color:var(--text-muted);">Dòng đã loại bỏ</div>
+                <div style="font-size:17px; font-weight:900; color:var(--text-dark); margin-top:2px;">0</div>
+              </div>
+              <div style="background:#fafbfc; padding:10px; border-radius:12px; text-align:center; border:1px solid #e2e8f0;">
+                <div style="font-size:10.5px; color:var(--text-muted);">Ô còn trống</div>
+                <div style="font-size:17px; font-weight:900; color:var(--text-dark); margin-top:2px;">0</div>
+              </div>
+            </div>
+
+            <!-- EXPORT ACTIONS (SCREEN ONLY) -->
+            <div class="web-only-selectors" style="display:flex; justify-content:flex-end; gap:12px; margin-top:16px; flex-wrap:wrap;">
+              <button class="action-btn-pill btn-pink-gradient" onclick="printReport()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                In Báo Cáo (PDF)
+              </button>
+              <button class="action-btn-pill btn-outline-pill" onclick="copyReportText()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Sao Chép Tóm Tắt
+              </button>
+              <button class="action-btn-pill btn-outline-pill" onclick="exportCleanCsv()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Xuất Tệp Dữ Liệu Sạch (CSV)
+              </button>
+            </div>
+          </div>
+
+          <!-- KHUNG CHỮ KÝ PHÊ DUYỆT CHÍNH THỨC (CHỈ XUẤT HIỆN TRÊN BẢN IN / PDF) -->
+          <div class="print-formal-signatures">
+            <div class="sig-col">
+              <div class="sig-title">NGƯỜI LẬP BÁO CÁO</div>
+              <div class="sig-subtitle">Chuyên viên Phân tích Dữ liệu BI</div>
+              <div class="sig-space"></div>
+              <div class="sig-name">Võ Thị Thu Hà</div>
+            </div>
+
+            <div class="sig-col">
+              <div class="sig-title">TRƯỞNG PHÒNG TÀI CHÍNH</div>
+              <div class="sig-subtitle">Kiểm soát & Đối soát Số liệu</div>
+              <div class="sig-space"></div>
+              <div class="sig-name">Trần Đình Khang</div>
+            </div>
+
+            <div class="sig-col">
+              <div class="sig-title">TỔNG GIÁM ĐỐC / CEO</div>
+              <div class="sig-subtitle">Phê duyệt ban hành chính thức</div>
+              <div class="sig-space"></div>
+              <div class="sig-name">Nguyễn Minh An</div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- DEDICATED C-LEVEL EXECUTIVE PRINT REPORT DOSSIER (A4 2-PAGE SPECIFICATION) -->
+  <!-- ========================================================================= -->
+  <div id="print-executive-report" class="print-executive-dossier" aria-hidden="true">
+
+    <!-- ==================== TRANG 1: TỔNG QUAN ĐIỀU HÀNH & BIỂU ĐỒ ==================== -->
+    <div class="print-page print-page-1">
+      
+      <!-- HEADER DOANH NGHIỆP TRANG TRỌNG -->
+      <div class="dossier-header">
+        <div class="dossier-header-top">
+          <div class="dossier-brand-group">
+            <div class="dossier-brand-title">DATAFLOW ENTERPRISE BUSINESS INTELLIGENCE</div>
+            <div class="dossier-brand-sub">HỆ THỐNG PHÂN TÍCH HIỆU SUẤT TÀI CHÍNH & VẬN HÀNH ĐA KÊNH TOÀN DIỆN</div>
+          </div>
+          <div class="dossier-meta-card">
+            <div><span class="meta-label">MÃ VĂN BẢN:</span> <span class="meta-value">DF-RP-2025-Q4</span></div>
+            <div><span class="meta-label">NGÀY BAN HÀNH:</span> <span class="meta-value">17/11/2026</span></div>
+            <div><span class="meta-label">PHÂN CẤP BẢO MẬT:</span> <span class="meta-badge-confidential">LƯU HÀNH NỘI BỘ</span></div>
+          </div>
+        </div>
+        <div class="dossier-title-banner">
+          <h1 class="dossier-main-title">BÁO CÁO TỔNG HỢP HIỆU SUẤT KINH DOANH & ĐỊNH HƯỚNG TĂNG TRƯỞNG</h1>
+          <p class="dossier-subtitle">Kỳ kiểm toán đối soát: Tháng 12/2025 · Tập mẫu chuẩn hóa: 15.000 giao dịch thương mại (sales_data.csv)</p>
+        </div>
+      </div>
+
+      <!-- TÓM TẮT ĐIỀU HÀNH (EXECUTIVE SUMMARY CALLOUT) -->
+      <div class="dossier-summary-callout">
+        <div class="summary-callout-tag">TÓM TẮT ĐIỀU HÀNH</div>
+        <div class="summary-callout-text">
+          Số liệu đối soát tự động từ <b>15.000 giao dịch</b> thương mại xác nhận toàn hệ thống đạt doanh thu thuần <b>191.107.000 VNĐ</b> với biên lợi nhuận gộp vững chắc <b>19,2%</b>. Chi phí vận hành giảm <b>61,3%</b> sau tháng khuyến mãi cao điểm, phản ánh năng lực kiểm soát ngân sách xuất sắc và hiệu quả phân bổ dòng vốn tối ưu.
+        </div>
+      </div>
+
+      <!-- 4 THẺ KPI CHIẾN LƯỢC TRÊN 1 HÀNG NGANG -->
+      <div class="dossier-kpi-grid">
+        <div class="dossier-kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-name">DOANH THU THUẦN</span>
+            <span class="kpi-card-pill pill-green">Đạt 103,2% KPI</span>
+          </div>
+          <div class="kpi-card-number">191.107.000 <span class="kpi-unit">đ</span></div>
+          <div class="kpi-card-footer">Chuỗi 3 kênh bán hàng trực thuộc</div>
+        </div>
+
+        <div class="dossier-kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-name">LỢI NHUẬN GỘP</span>
+            <span class="kpi-card-pill pill-pink">Biên LN 19,2%</span>
+          </div>
+          <div class="kpi-card-number">36.618.000 <span class="kpi-unit">đ</span></div>
+          <div class="kpi-card-footer">Vượt ngưỡng an toàn tài chính (+1,2%)</div>
+        </div>
+
+        <div class="dossier-kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-name">CHI PHÍ VẬN HÀNH</span>
+            <span class="kpi-card-pill pill-blue">Giảm 61,3% MoM</span>
+          </div>
+          <div class="kpi-card-number">154.489.000 <span class="kpi-unit">đ</span></div>
+          <div class="kpi-card-footer">Tối ưu chi phí Marketing & Mặt bằng</div>
+        </div>
+
+        <div class="dossier-kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-name">TỶ LỆ GIAO THÀNH CÔNG</span>
+            <span class="kpi-card-pill pill-purple">Chuẩn 5 Sao</span>
+          </div>
+          <div class="kpi-card-number">98,8%</div>
+          <div class="kpi-card-footer">14.820 / 15.000 đơn hoàn tất</div>
+        </div>
+      </div>
+
+      <!-- LƯỚI 4 BIỂU ĐỒ TRỰC QUAN VECTOR SVG (KHÔNG PHỤ THUỘC CANVAS) -->
+      <div class="dossier-charts-grid">
+        
+        <!-- BIỂU ĐỒ 1: DOANH THU THEO THÁNG (SVG AREA & LINE) -->
+        <div class="dossier-chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Xu hướng doanh thu thuần 12 tháng (VNĐ)</div>
+            <div class="chart-card-subtitle">Đối chiếu chuỗi thời gian 2025 · Định dạng chuẩn hóa</div>
+          </div>
+          <div class="svg-chart-container">
+            <svg viewBox="0 0 340 135" class="dossier-svg-chart">
+              <defs>
+                <linearGradient id="printTrendGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#ff2a70" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#ff2a70" stop-opacity="0.02"/>
+                </linearGradient>
+              </defs>
+              <!-- GRID LINES -->
+              <line x1="25" y1="20" x2="330" y2="20" stroke="#e2e8f0" stroke-dasharray="2,2" stroke-width="0.8"/>
+              <line x1="25" y1="55" x2="330" y2="55" stroke="#e2e8f0" stroke-dasharray="2,2" stroke-width="0.8"/>
+              <line x1="25" y1="90" x2="330" y2="90" stroke="#e2e8f0" stroke-dasharray="2,2" stroke-width="0.8"/>
+              <line x1="25" y1="115" x2="330" y2="115" stroke="#cbd5e1" stroke-width="1"/>
+              
+              <!-- Y LABELS -->
+              <text x="5" y="23" font-size="7.5" fill="#64748b" font-weight="600">500Tr</text>
+              <text x="5" y="58" font-size="7.5" fill="#64748b" font-weight="600">300Tr</text>
+              <text x="5" y="93" font-size="7.5" fill="#64748b" font-weight="600">100Tr</text>
+
+              <!-- AREA PATH -->
+              <path d="M 35,92 L 60,89 L 85,86 L 110,95 L 135,102 L 160,107 L 185,110 L 210,112 L 235,113 L 260,105 L 285,25 L 315,90 L 315,115 L 35,115 Z" fill="url(#printTrendGrad)"/>
+              
+              <!-- LINE PATH -->
+              <path d="M 35,92 L 60,89 L 85,86 L 110,95 L 135,102 L 160,107 L 185,110 L 210,112 L 235,113 L 260,105 L 285,25 L 315,90" fill="none" stroke="#ff2a70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <!-- DATA POINTS -->
+              <circle cx="35" cy="92" r="2.5" fill="#ffffff" stroke="#ff2a70" stroke-width="1.5"/>
+              <circle cx="85" cy="86" r="2.5" fill="#ffffff" stroke="#ff2a70" stroke-width="1.5"/>
+              <circle cx="160" cy="107" r="2.5" fill="#ffffff" stroke="#ff2a70" stroke-width="1.5"/>
+              <circle cx="285" cy="25" r="4" fill="#ff2a70" stroke="#ffffff" stroke-width="2"/>
+              <circle cx="315" cy="90" r="3.5" fill="#a855f7" stroke="#ffffff" stroke-width="1.5"/>
+
+              <!-- PEAK ANNOTATION -->
+              <rect x="250" y="8" width="70" height="15" rx="3" fill="#0f172a"/>
+              <text x="285" y="18.5" font-size="7" fill="#ffffff" font-weight="800" text-anchor="middle">T11: 475,5 Tr (Đỉnh)</text>
+
+              <!-- CURRENT MONTH ANNOTATION -->
+              <text x="315" y="82" font-size="7" fill="#a855f7" font-weight="800" text-anchor="middle">T12: 191,1 Tr</text>
+
+              <!-- X LABELS -->
+              <text x="35" y="125" font-size="7" fill="#64748b" text-anchor="middle">T1</text>
+              <text x="85" y="125" font-size="7" fill="#64748b" text-anchor="middle">T3</text>
+              <text x="160" y="125" font-size="7" fill="#64748b" text-anchor="middle">T6</text>
+              <text x="235" y="125" font-size="7" fill="#64748b" text-anchor="middle">T9</text>
+              <text x="285" y="125" font-size="7" fill="#ff2a70" font-weight="800" text-anchor="middle">T11</text>
+              <text x="315" y="125" font-size="7" fill="#a855f7" font-weight="800" text-anchor="middle">T12</text>
+            </svg>
+          </div>
+          <div class="chart-summary-line">
+            <b>Đỉnh điểm doanh thu:</b> Tháng 11 (475,5 triệu đ) nhờ chiến dịch kích cầu; Tháng 12 ổn định mức 191,1 triệu đ.
+          </div>
+        </div>
+
+        <!-- BIỂU ĐỒ 2: CƠ CẤU CHI PHÍ THEO KÊNH (SVG DONUT CHART) -->
+        <div class="dossier-chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Cơ cấu chi phí vận hành theo kênh</div>
+            <div class="chart-card-subtitle">Tổng chi phí kỳ báo cáo: 154.489.000 VNĐ</div>
+          </div>
+          <div class="donut-chart-wrapper">
+            <div class="donut-svg-box">
+              <svg viewBox="0 0 100 100" class="donut-svg">
+                <!-- SEGMENT 1: CỬA HÀNG 48.6% (stroke-dasharray 48.6 51.4) -->
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#ff2a70" stroke-width="16" stroke-dasharray="116 123" stroke-dashoffset="0"/>
+                <!-- SEGMENT 2: ONLINE 37.2% (stroke-dasharray 88.9 150) -->
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#a855f7" stroke-width="16" stroke-dasharray="89 150" stroke-dashoffset="-116"/>
+                <!-- SEGMENT 3: SÀN TMĐT 14.2% -->
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#f472b6" stroke-width="16" stroke-dasharray="34 205" stroke-dashoffset="-205"/>
+                <!-- DONUT CENTER TEXT -->
+                <text x="50" y="48" font-size="10" font-weight="900" fill="#0f172a" text-anchor="middle">154,5 Tr</text>
+                <text x="50" y="60" font-size="6.5" font-weight="700" fill="#64748b" text-anchor="middle">Tổng chi phí</text>
+              </svg>
+            </div>
+            <div class="donut-legend-list">
+              <div class="legend-row">
+                <div class="legend-marker" style="background:#ff2a70;"></div>
+                <div class="legend-info">
+                  <div class="legend-top"><span>Cửa hàng trực tiếp</span> <b>48,6%</b></div>
+                  <div class="legend-sub">75.127.000 VNĐ (Mặt bằng + Nhân sự)</div>
+                </div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-marker" style="background:#a855f7;"></div>
+                <div class="legend-info">
+                  <div class="legend-top"><span>Website / App Online</span> <b>37,2%</b></div>
+                  <div class="legend-sub">57.538.000 VNĐ (Cloud + Digital Ads)</div>
+                </div>
+              </div>
+              <div class="legend-row">
+                <div class="legend-marker" style="background:#f472b6;"></div>
+                <div class="legend-info">
+                  <div class="legend-top"><span>Sàn TMĐT</span> <b>14,2%</b></div>
+                  <div class="legend-sub">21.824.000 VNĐ (Phí sàn + Ship trợ giá)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-summary-line">
+            <b>Nhận định:</b> Kênh Online và TMĐT có tỷ suất chi phí linh hoạt cao hơn 28% so với chuỗi cửa hàng vật lý.
+          </div>
+        </div>
+
+        <!-- BIỂU ĐỒ 3: ĐÓNG GÓP DOANH THU THEO KÊNH (HORIZONTAL BARS) -->
+        <div class="dossier-chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Đóng góp doanh thu thuần theo kênh</div>
+            <div class="chart-card-subtitle">Kênh dẫn đầu: Cửa hàng trực tiếp (47,8% tỷ trọng)</div>
+          </div>
+          <div class="bar-chart-list">
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Cửa hàng trực tiếp</span>
+                <span class="bar-value-text"><b>91.324.000 đ</b> (47,8%)</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:91.3%; background:linear-gradient(90deg, #ff2a70, #fb7185);"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Website / App Online</span>
+                <span class="bar-value-text"><b>73.526.000 đ</b> (38,5%)</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:73.5%; background:linear-gradient(90deg, #a855f7, #c084fc);"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Sàn TMĐT (Shopee/TikTok)</span>
+                <span class="bar-value-text"><b>26.257.000 đ</b> (13,7%)</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:26.3%; background:linear-gradient(90deg, #f43f5e, #fda4af);"></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-summary-line">
+            <b>Cơ cấu lành mạnh:</b> 86,3% doanh thu đến từ kênh chủ động (Cửa hàng & Website), không bị phụ thuộc sàn trung gian.
+          </div>
+        </div>
+
+        <!-- BIỂU ĐỒ 4: BIẾN ĐỘNG CHU KỲ DOANH THU MOM -->
+        <div class="dossier-chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title">Biến động chu kỳ doanh thu MoM (T11 → T12)</div>
+            <div class="chart-card-subtitle">Giảm 284.450.000 VNĐ sau tháng đỉnh cao Black Friday</div>
+          </div>
+          <div class="bar-chart-list">
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Cửa hàng trực tiếp</span>
+                <span class="bar-value-text text-red"><b>-145.072.000 đ</b> (-61,3%)</span>
+              </div>
+              <div class="bar-track" style="background:#fee2e2;">
+                <div class="bar-fill" style="width:85%; background:#ef4444;"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Website / App Online</span>
+                <span class="bar-value-text text-red"><b>-78.960.000 đ</b> (-51,8%)</span>
+              </div>
+              <div class="bar-track" style="background:#fee2e2;">
+                <div class="bar-fill" style="width:55%; background:#ef4444;"></div>
+              </div>
+            </div>
+
+            <div class="bar-item">
+              <div class="bar-info-row">
+                <span class="bar-label-name">Sàn TMĐT</span>
+                <span class="bar-value-text text-red"><b>-60.418.000 đ</b> (-69,7%)</span>
+              </div>
+              <div class="bar-track" style="background:#fee2e2;">
+                <div class="bar-fill" style="width:42%; background:#ef4444;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-summary-line">
+            <b>Quy luật chu kỳ:</b> Mức điều chỉnh hoàn toàn phù hợp với hành vi tiêu dùng sau chiến dịch mua sắm lớn nhất năm.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CHỈ SỐ BIÊN LỢI NHUẬN GỘP BANNER -->
+      <div class="dossier-margin-banner">
+        <div class="margin-banner-left">
+          <span class="margin-badge">CHỈ SỐ TÀI CHÍNH CỐT LÕI</span>
+          <div class="margin-title">Tỷ lệ lợi nhuận gộp trên doanh thu thuần (Gross Profit Margin)</div>
+          <div class="margin-desc">Đạt mục tiêu định hướng của Ban Giám Đốc duy trì biên độ trên 18,0% trong mọi điều kiện thị trường.</div>
+        </div>
+        <div class="margin-banner-right">
+          <div class="margin-huge-number">19,2%</div>
+          <div class="margin-huge-sub">ĐẠT CHUẨN AN TOÀN TÀI CHÍNH</div>
+        </div>
+      </div>
+
+      <!-- FOOTER TRANG 1 -->
+      <div class="dossier-page-footer">
+        <div class="footer-left">DATAFLOW INTELLIGENCE 2026 · HỆ THỐNG PHÂN TÍCH TÀI CHÍNH DOANH NGHIỆP</div>
+        <div class="footer-right">TRANG 1 / 2</div>
+      </div>
+
+    </div>
+
+    <!-- ==================== NGẮT TRANG A4 BẮT BUỘC ==================== -->
+    <div class="dossier-page-break"></div>
+
+    <!-- ==================== TRANG 2: ĐỐI SOÁT CHI TIẾT & CHỮ KÝ ==================== -->
+    <div class="print-page print-page-2">
+      
+      <!-- MINI HEADER TRANG 2 -->
+      <div class="dossier-mini-header">
+        <div class="mini-brand">DATAFLOW ENTERPRISE BI — BÁO CÁO ĐIỀU HÀNH THÁNG 12/2025</div>
+        <div class="mini-ref">MÃ ĐỐI SOÁT: DF-AUDIT-2025-12 · TRANG 2 / 2</div>
+      </div>
+
+      <!-- PHẦN 1: BẢNG TỔNG HỢP ĐỐI SOÁT TÀI CHÍNH ĐA KÊNH CHI TIẾT -->
+      <div class="dossier-section-block">
+        <div class="section-title-bar">
+          <div class="section-title-text">1. BẢNG TỔNG HỢP ĐỐI SOÁT TÀI CHÍNH & ĐÓNG GÓP KÊNH BÁN HÀNG</div>
+          <div class="section-title-sub">Dữ liệu chuẩn hóa 15.000 dòng giao dịch · Đơn vị tính: VNĐ</div>
+        </div>
+
+        <table class="dossier-data-table">
+          <thead>
+            <tr>
+              <th style="width:22%;">Kênh Bán Hàng</th>
+              <th style="width:11%; text-align:center;">Số Đơn</th>
+              <th style="width:16%; text-align:right;">Doanh Thu Thuần</th>
+              <th style="width:11%; text-align:center;">Tỷ Trọng DT</th>
+              <th style="width:15%; text-align:right;">Chi Phí Vận Hành</th>
+              <th style="width:15%; text-align:right;">Lợi Nhuận Gộp</th>
+              <th style="width:10%; text-align:center;">Biên LN</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="tbl-channel-name">Cửa hàng trực tiếp (Flagship)</div>
+                <div class="tbl-channel-sub">Chuỗi 8 điểm bán vật lý</div>
+              </td>
+              <td style="text-align:center; font-weight:700;">8.240</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">91.324.000</td>
+              <td style="text-align:center;"><span class="table-pill pill-pink">47,8%</span></td>
+              <td style="text-align:right; color:#475569;">75.127.000</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">16.197.000</td>
+              <td style="text-align:center; font-weight:800; color:#0f172a;">17,7%</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="tbl-channel-name">Website & App Online</div>
+                <div class="tbl-channel-sub">Trực tiếp D2C (Bán lẻ số)</div>
+              </td>
+              <td style="text-align:center; font-weight:700;">4.890</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">73.526.000</td>
+              <td style="text-align:center;"><span class="table-pill pill-purple">38,5%</span></td>
+              <td style="text-align:right; color:#475569;">57.538.000</td>
+              <td style="text-align:right; font-weight:800; color:#10b981;">15.988.000</td>
+              <td style="text-align:center; font-weight:800; color:#10b981;">21,7%</td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="tbl-channel-name">Sàn TMĐT (Shopee / TikTok Shop)</div>
+                <div class="tbl-channel-sub">Kênh sàn trực tuyến liên kết</div>
+              </td>
+              <td style="text-align:center; font-weight:700;">1.870</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">26.257.000</td>
+              <td style="text-align:center;"><span class="table-pill pill-blue">13,7%</span></td>
+              <td style="text-align:right; color:#475569;">21.824.000</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">4.433.000</td>
+              <td style="text-align:center; font-weight:800; color:#0f172a;">16,9%</td>
+            </tr>
+
+            <tr class="table-total-row">
+              <td>
+                <div style="font-weight:900; color:#ff2a70; font-size:9.5pt;">TỔNG HỢP TOÀN HỆ THỐNG</div>
+                <div style="font-size:7pt; color:#64748b;">Khớp số liệu kho & ngân hàng 100%</div>
+              </td>
+              <td style="text-align:center; font-weight:900; color:#ff2a70;">15.000</td>
+              <td style="text-align:right; font-weight:900; color:#ff2a70; font-size:10pt;">191.107.000</td>
+              <td style="text-align:center;"><span class="table-pill pill-pink-solid">100,0%</span></td>
+              <td style="text-align:right; font-weight:900; color:#ff2a70;">154.489.000</td>
+              <td style="text-align:right; font-weight:900; color:#ff2a70; font-size:10pt;">36.618.000</td>
+              <td style="text-align:center; font-weight:900; color:#ff2a70; font-size:10pt;">19,2%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PHẦN 2: ĐÁNH GIÁ CHUYÊN ĐỀ & KẾ HOẠCH HÀNH ĐỘNG CHIẾN LƯỢC -->
+      <div class="dossier-section-block" style="margin-top:14px;">
+        <div class="section-title-bar">
+          <div class="section-title-text">2. KẾ HOẠCH HÀNH ĐỘNG CHIẾN LƯỢC & TỐI ƯU HÓA QUÝ 1/2026</div>
+        </div>
+
+        <div class="action-plan-grid">
+          <div class="action-plan-card">
+            <div class="action-card-header">
+              <span class="action-step-num">01</span>
+              <span class="action-card-title">Mở rộng kênh Website D2C (Biên LN 21,7%)</span>
+            </div>
+            <div class="action-card-body">
+              Website mang lại tỷ suất lợi nhuận cao nhất toàn hệ thống (21,7%). Cần phân bổ thêm 15% ngân sách marketing vào các chiến dịch giữ chân khách hàng (Retention) và phễu đặt hàng tự động để tăng trưởng thị phần số.
+            </div>
+          </div>
+
+          <div class="action-plan-card">
+            <div class="action-card-header">
+              <span class="action-step-num">02</span>
+              <span class="action-card-title">Tái cấu trúc chiết khấu Sàn TMĐT</span>
+            </div>
+            <div class="action-card-body">
+              Biên lợi nhuận sàn TMĐT (16,9%) chịu áp lực lớn từ phí hoa hồng và voucher trợ giá. Đề xuất chuyển dịch dòng sản phẩm combo độc quyền và tối ưu chi phí hoàn tất đơn hàng (Fulfillment) nhằm kéo biên độ lên trên 18,5%.
+            </div>
+          </div>
+
+          <div class="action-plan-card">
+            <div class="action-card-header">
+              <span class="action-step-num">03</span>
+              <span class="action-card-title">Hợp nhất dữ liệu tồn kho Omnichannel</span>
+            </div>
+            <div class="action-card-body">
+              Áp dụng hệ thống cảnh báo tồn kho liên kênh theo thời gian thực (Real-time Sync). Tránh tình trạng tồn kho cục bộ tại các cửa hàng vật lý và giảm tối đa tỷ lệ hủy đơn hàng do hết sản phẩm.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHẦN 3: CHỨNG NHẬN KIỂM TOÁN CHẤT LƯỢNG DỮ LIỆU (DQ AUDIT CERTIFICATION) -->
+      <div class="dossier-audit-banner">
+        <div class="audit-seal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+        </div>
+        <div class="audit-info">
+          <div class="audit-title">CHỨNG NHẬN KIỂM TOÁN TOÀN VẸN SỐ LIỆU — DATA QUALITY AUDIT PASSED 100%</div>
+          <div class="audit-desc">
+            Quy trình làm sạch dữ liệu 4 giai đoạn MECE đã hoàn tất: <b>15.000 dòng</b> được kiểm tra đối chiếu chéo; phát hiện và xử lý <b>0 lỗi khuyết thiếu</b>; <b>0 bản ghi trùng lặp</b>. Số liệu báo cáo hoàn toàn đáng tin cậy phục vụ Hội đồng Quản trị và Nhà đầu tư.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHẦN 4: KHỐI CHỮ KÝ PHÊ DUYỆT CHÍNH THỨC (3 CỘT) -->
+      <div class="dossier-signatures-block">
+        <div class="signature-col">
+          <div class="sig-role">NGƯỜI LẬP BÁO CÁO</div>
+          <div class="sig-duty">Chuyên viên Phân tích BI</div>
+          <div class="sig-sign-space"></div>
+          <div class="sig-author-name">Trần Mai Linh</div>
+          <div class="sig-date">Ngày ký: 17/11/2026</div>
+        </div>
+
+        <div class="signature-col">
+          <div class="sig-role">TRƯỞNG PHÒNG TÀI CHÍNH & BI</div>
+          <div class="sig-duty">Kiểm soát & Thẩm định Số liệu</div>
+          <div class="sig-sign-space"></div>
+          <div class="sig-author-name">Trần Đình Khang</div>
+          <div class="sig-date">Ngày ký: 17/11/2026</div>
+        </div>
+
+        <div class="signature-col">
+          <div class="sig-role">TỔNG GIÁM ĐỐC (CEO)</div>
+          <div class="sig-duty">Phê duyệt ban hành chính thức</div>
+          <div class="sig-sign-space"></div>
+          <div class="sig-author-name">Nguyễn Minh An</div>
+          <div class="sig-date">Ngày ký: 17/11/2026</div>
+        </div>
+      </div>
+
+      <!-- FOOTER TRANG 2 -->
+      <div class="dossier-page-footer">
+        <div class="footer-left">DATAFLOW STUDIO 2026 · VĂN BẢN ĐÃ XÁC THỰC CHỮ KÝ SỐ VÀ TOÀN VẸN HỆ THỐNG</div>
+        <div class="footer-right">TRANG 2 / 2</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- BỘ ĐIỀU KHIỂN CHẤM NHỎ NỔI Ở GÓC DƯỚI (ÂM THANH + HIỆU ỨNG LẤP LÁNH) -->
+  <div class="floating-corner-controls">
+    
+    <!-- CHẤM SÁNG / TỐI (THEME TOGGLE) -->
+    <div class="corner-floating-dot" id="corner-theme-dot" onclick="toggleThemeMode()" title="Chuyển đổi Giao diện Sáng / Tối">
+      <svg id="theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </div>
+
+    <!-- CHẤM TRỢ LÝ AI -->
+    <div class="corner-floating-dot" id="corner-ai-dot" onclick="openAiCopilotDrawer()" title="Mở Trợ Lý Phân Tích Thông Minh (AI Co-Pilot)">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 12a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm12 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm-6 6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2v-2z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </div>
+
+    <!-- CHẤM LẤP LÁNH -->
+    <div class="corner-floating-dot" id="corner-sparkle-dot" onclick="triggerMagicSparkles(window.innerWidth/2, 200, 45)" title="Hiệu ứng lấp lánh (Nhấp để phát sáng)">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+      </svg>
+    </div>
+
+    <!-- CHẤM ÂM THANH -->
+    <div class="corner-floating-dot" id="corner-sound-dot" onclick="toggleAudio()" title="Âm thanh: Đang BẬT (Nhấp để tắt)">
+      <div class="sound-pulse-ring" id="sound-pulse-ring"></div>
+      <div id="corner-sound-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="custom-toast" id="custom-toast">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ff2a70" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span id="toast-message">Thông báo</span>
+  </div>
+
+  <script>
+    /* ============================================================
+       DATAFLOW INTELLIGENCE JAVASCRIPT ENGINE V4
+       ============================================================ */
+
+    let currentStep = 1;
+    let unlockedStep = 1;
+    window.hasLoadedData = false;
+    let isAudioEnabled = true;
+    let audioCtx = null;
+
+    // DATASET REPOSITORY
+    const samplePreviewRows = [
+      { orderId: "ORD-2025-001", date: "2025-11-04", customer: "CUST-8812", region: "Miền Bắc", city: "Hà Nội", segment: "Doanh nghiệp", channel: "In-Store", netSales: "38.500.000", returned: "Không" },
+      { orderId: "ORD-2025-002", date: "2025-11-05", customer: "CUST-4120", region: "Miền Nam", city: "TP. Hồ Chí Minh", segment: "Tiêu dùng", channel: "Website/App", netSales: "2.450.000", returned: "Không" },
+      { orderId: "ORD-2025-003", date: "2025-11-06", customer: "CUST-9304", region: "Miền Trung", city: "Đà Nẵng", segment: "Tiêu dùng", channel: "Sàn TMĐT", netSales: "890.000", returned: "Có" },
+      { orderId: "ORD-2025-004", date: "2025-12-01", customer: "CUST-1049", region: "Miền Nam", city: "Bình Dương", segment: "Doanh nghiệp", channel: "In-Store", netSales: "24.200.000", returned: "Không" },
+      { orderId: "ORD-2025-005", date: "2025-12-02", customer: "CUST-5518", region: "Miền Bắc", city: "Hải Phòng", segment: "Tiêu dùng", channel: "Website/App", netSales: "1.750.000", returned: "Không" }
+    ];
+
+    // WEB AUDIO API
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleAudio() {
+      isAudioEnabled = !isAudioEnabled;
+      const soundDot = document.getElementById("corner-sound-dot");
+      const iconContainer = document.getElementById("corner-sound-icon");
+      
+      if (isAudioEnabled) {
+        soundDot.classList.remove("muted");
+        soundDot.title = "Âm thanh: Đang BẬT (Nhấp để tắt)";
+        iconContainer.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        `;
+        playPopSound(800);
+        showToast("Âm thanh hiệu ứng: Đã Bật");
+      } else {
+        soundDot.classList.add("muted");
+        soundDot.title = "Âm thanh: Đang TẮT (Nhấp để bật)";
+        iconContainer.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        `;
+        showToast("Âm thanh hiệu ứng: Đã Tắt");
+      }
+    }
+
+    function playPopSound(freq = 600) {
+      if (!isAudioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.09);
+      } catch(e) {}
+    }
+
+    function playChimeSound() {
+      if (!isAudioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.07);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime + index * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.07 + 0.28);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + index * 0.07);
+          osc.stop(ctx.currentTime + index * 0.07 + 0.3);
+        });
+      } catch(e) {}
+    }
+
+    function playWarnSound() {
+      if (!isAudioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(180, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.16);
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.17);
+      } catch(e) {}
+    }
+
+    // SPARKLE PARTICLES
+    const canvas = document.getElementById("sparkle-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function triggerMagicSparkles(x, y, count = 35) {
+      playPopSound(720);
+      const colors = ["#ff2a70", "#ff6b98", "#ff9eb8", "#a855f7", "#ffffff", "#ffd700"];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 6 + 2;
+        particles.push({
+          x: x || window.innerWidth / 2,
+          y: y || 200,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.5,
+          size: Math.random() * 4 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: Math.random() * 0.02 + 0.015,
+          spin: (Math.random() - 0.5) * 0.3
+        });
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.1;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // SIDEBAR TOGGLE
+    function toggleSidebar() {
+      const sidebar = document.getElementById("workbench-sidebar");
+      sidebar.classList.toggle("collapsed");
+      const isCollapsed = sidebar.classList.contains("collapsed");
+      const btn = document.getElementById("sidebar-toggle-btn");
+      
+      if (btn) {
+        btn.innerHTML = isCollapsed
+          ? `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`
+          : `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+        btn.title = isCollapsed ? "Mở rộng thanh phụ" : "Thu nhỏ thanh phụ";
+      }
+      playPopSound(520);
+      setTimeout(renderCharts, 350);
+    }
+
+    // TOAST NOTIFICATIONS
+    function showToast(msg) {
+      const toast = document.getElementById("custom-toast");
+      const text = document.getElementById("toast-message");
+      text.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    // STEP LOGIC
+    function handleStepClick(step) {
+      if (step > unlockedStep) {
+        playWarnSound();
+        const targetCard = document.getElementById(`nav-step-${step}`);
+        if (targetCard) {
+          targetCard.classList.add("shake-anim");
+          setTimeout(() => targetCard.classList.remove("shake-anim"), 450);
+        }
+        showToast(`Bước ${step} đang bị khóa! Vui lòng hoàn thành Bước ${unlockedStep} trước.`);
+        return;
+      }
+      goToStep(step);
+    }
+
+    function goToStep(step) {
+      currentStep = step;
+      playPopSound(650);
+      updateNavigationUI();
+      updateViewVisibility();
+      updateAiSpeech();
+
+      if (step === 3) {
+        updateGroupCompare();
+      }
+      if (step === 4) {
+        setTimeout(renderCharts, 100);
+      }
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function unlockAndProceed(nextStep) {
+      if (nextStep === 2) {
+        const bizType = document.getElementById("biz-type-input") ? document.getElementById("biz-type-input").value.trim() : "";
+        const sheetsLink = document.getElementById("sheets-link-input") ? document.getElementById("sheets-link-input").value.trim() : "";
+        if (!bizType && !sheetsLink && !window.hasLoadedData) {
+          playWarnSound();
+          showToast("Chưa có nguồn dữ liệu! Vui lòng nhập thông tin hoặc bấm thử dữ liệu mẫu trước khi mở khóa.");
+          return;
+        }
+      }
+      if (nextStep > unlockedStep) {
+        unlockedStep = nextStep;
+      }
+      triggerMagicSparkles(window.innerWidth / 2, 240, 45);
+      playChimeSound();
+      showToast(`Đã mở khóa thành công Bước ${nextStep}.`);
+      goToStep(nextStep);
+    }
+
+    function getMinimalSvgIcon(step, state) {
+      if (state === "locked") {
+        return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+      }
+      if (state === "completed") {
+        return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      }
+      
+      const icons = {
+        1: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>`,
+        2: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
+        3: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+        4: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`
+      };
+      return icons[step] || icons[1];
+    }
+
+    function updateNavigationUI() {
+      for (let s = 1; s <= 4; s++) {
+        const item = document.getElementById(`nav-step-${s}`);
+        const iconBox = document.getElementById(`icon-step-${s}`);
+        const badge = document.getElementById(`badge-step-${s}`);
+
+        item.classList.remove("active", "completed", "locked");
+
+        if (s === currentStep) {
+          item.classList.add("active");
+          badge.textContent = "Đang xem";
+          iconBox.innerHTML = getMinimalSvgIcon(s, "active");
+        } else if (s <= unlockedStep) {
+          item.classList.add("completed");
+          badge.textContent = "Đã xong";
+          iconBox.innerHTML = getMinimalSvgIcon(s, "completed");
+        } else {
+          item.classList.add("locked");
+          badge.textContent = "Khóa";
+          iconBox.innerHTML = getMinimalSvgIcon(s, "locked");
+        }
+      }
+    }
+
+    function updateViewVisibility() {
+      for (let s = 1; s <= 4; s++) {
+        const view = document.getElementById(`view-step-${s}`);
+        if (view) {
+          view.style.display = (s === currentStep) ? "flex" : "none";
+        }
+      }
+    }
+
+    function updateAiSpeech() {
+      const speech = document.getElementById("ai-status-speech");
+      if (!speech) return;
+      const msgs = {
+        1: "Bước 1: Hãy nhập thông tin doanh nghiệp hoặc liên kết bảng tính để bắt đầu.",
+        2: "Bước 2: Hệ thống đã kiểm tra 15.000 dòng. Không có ô trống lỗi, các cột tiền VND và ngày tháng đã được chuẩn hóa.",
+        3: "Bước 3: Khám phá tương quan giữa các kênh phân phối và trạng thái đơn hàng. Bấm duyệt để tạo Dashboard điều hành.",
+        4: "Bước 4: Báo cáo điều hành hoàn tất! Bạn có thể In báo cáo (PDF) trực tiếp theo chuẩn xuất bản A4, sao chép tóm tắt hoặc xuất tệp CSV."
+      };
+      speech.textContent = msgs[currentStep] || msgs[1];
+    }
+
+    function connectGoogleSheets() {
+      const link = document.getElementById("sheets-link-input").value.trim();
+      if (!link) {
+        playWarnSound();
+        showToast("Vui lòng dán liên kết Google Sheets trước khi kết nối!");
+        return;
+      }
+      window.hasLoadedData = true;
+      playPopSound(700);
+      triggerMagicSparkles(window.innerWidth / 2, 380, 20);
+      showToast("Đã liên kết bảng tính Google Sheets thành công.");
+    }
+
+    function triggerUploadCsv() {
+      document.getElementById("csv-file-input").click();
+    }
+
+    function handleFileSelected(event) {
+      const file = event.target.files[0];
+      if (file) {
+        window.hasLoadedData = true;
+        playPopSound(680);
+        showToast(`Đã tải lên tệp: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+      }
+    }
+
+    function loadDefaultEnterpriseDataset() {
+      window.hasLoadedData = true;
+      document.getElementById("biz-type-input").value = "Bán lẻ thời trang & Chuỗi cửa hàng đa kênh";
+      document.getElementById("biz-extra-input").value = "3 kênh phân phối: Cửa hàng trực tiếp, Website TMĐT, Sàn TMĐT.";
+      document.getElementById("biz-questions-input").value = "Doanh thu theo kênh nào cao nhất?\nTỷ lệ hoàn đơn tập trung ở đâu?\nCơ cấu chi phí theo từng kênh?";
+      document.getElementById("sheets-link-input").value = "https://docs.google.com/spreadsheets/d/sales_data_omnichannel_2026";
+      
+      playPopSound(720);
+      triggerMagicSparkles(window.innerWidth / 2, 450, 25);
+      showToast("Đã nạp bộ dữ liệu mẫu: sales_data.csv (15.000 dòng)");
+    }
+
+    function toggleCleaningRule(rule) {
+      playPopSound(550);
+      showToast("Đã cập nhật quy tắc làm sạch dữ liệu.");
+    }
+
+    // STEP 3: GROUP COMPARE
+    function updateGroupCompare() {
+      const select = document.getElementById("select-group-by");
+      const val = select ? select.value : "Returned";
+      const container = document.getElementById("group-compare-bars");
+      const caption = document.getElementById("group-compare-caption");
+      if (!container) return;
+
+      if (val === "Returned") {
+        container.innerHTML = `
+          <div class="hbar-item">
+            <span class="hbar-label">Không (Đạt)</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 96.3%;"></div>
+            </div>
+            <span class="hbar-value-text">40.307.721.000</span>
+          </div>
+          <div class="hbar-item">
+            <span class="hbar-label">Có (Hoàn)</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 3.7%;"></div>
+            </div>
+            <span class="hbar-value-text">1.559.493.000</span>
+          </div>
+        `;
+        if (caption) caption.textContent = "2 nhóm theo giá trị giảm dần. Tỷ lệ hoàn đơn: 3,7%.";
+      } else if (val === "Channel") {
+        container.innerHTML = `
+          <div class="hbar-item">
+            <span class="hbar-label">In-Store</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 52%;"></div>
+            </div>
+            <span class="hbar-value-text">21.840.150.000</span>
+          </div>
+          <div class="hbar-item">
+            <span class="hbar-label">Website</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 33%;"></div>
+            </div>
+            <span class="hbar-value-text">13.824.900.000</span>
+          </div>
+          <div class="hbar-item">
+            <span class="hbar-label">Sàn TMĐT</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 15%;"></div>
+            </div>
+            <span class="hbar-value-text">6.202.164.000</span>
+          </div>
+        `;
+        if (caption) caption.textContent = "3 kênh phân phối theo doanh thu thuần.";
+      } else {
+        container.innerHTML = `
+          <div class="hbar-item">
+            <span class="hbar-label">Doanh nghiệp</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 65%;"></div>
+            </div>
+            <span class="hbar-value-text">27.213.500.000</span>
+          </div>
+          <div class="hbar-item">
+            <span class="hbar-label">Tiêu dùng</span>
+            <div class="hbar-track">
+              <div class="hbar-fill-pink" style="width: 35%;"></div>
+            </div>
+            <span class="hbar-value-text">14.653.714.000</span>
+          </div>
+        `;
+        if (caption) caption.textContent = "2 phân khúc khách hàng chính theo giá trị.";
+      }
+    }
+
+    // CANVAS CHARTS
+    function renderCharts() {
+      renderMonthlyTrend();
+      renderCostDonut();
+    }
+
+    function renderMonthlyTrend() {
+      const c = document.getElementById("monthly-trend-canvas");
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = c.getBoundingClientRect();
+      c.width = rect.width * dpr;
+      c.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const points = [
+        { label: "2025-01", val: 3.4 },
+        { label: "2025-02", val: 3.6 },
+        { label: "2025-03", val: 3.8 },
+        { label: "2025-04", val: 3.2 },
+        { label: "2025-05", val: 2.7 },
+        { label: "2025-06", val: 2.2 },
+        { label: "2025-07", val: 1.8 },
+        { label: "2025-08", val: 1.5 },
+        { label: "2025-09", val: 0.9 },
+        { label: "2025-10", val: 0.6 }
+      ];
+
+      const padX = 35;
+      const padY = 25;
+      const plotW = w - padX * 2;
+      const plotH = h - padY * 2;
+      const maxVal = 4.0;
+
+      // Draw subtle grid lines
+      ctx.strokeStyle = "#f8fafc";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = padY + (plotH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padX, y);
+        ctx.lineTo(w - padX, y);
+        ctx.stroke();
+
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "10px sans-serif";
+        ctx.fillText((4 - i) + " tỷ", 5, y + 3);
+      }
+
+      // Draw gradient trend curve in Pink / Berry
+      const grad = ctx.createLinearGradient(0, padY, 0, h - padY);
+      grad.addColorStop(0, "rgba(255, 42, 112, 0.35)");
+      grad.addColorStop(1, "rgba(255, 42, 112, 0.0)");
+
+      ctx.beginPath();
+      points.forEach((pt, i) => {
+        const x = padX + (plotW / (points.length - 1)) * i;
+        const y = padY + plotH * (1 - pt.val / maxVal);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      // Fill area
+      ctx.lineTo(w - padX, padY + plotH);
+      ctx.lineTo(padX, padY + plotH);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Stroke line in Hot Pink
+      ctx.beginPath();
+      points.forEach((pt, i) => {
+        const x = padX + (plotW / (points.length - 1)) * i;
+        const y = padY + plotH * (1 - pt.val / maxVal);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = "#ff2a70";
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+
+      // Draw point markers
+      points.forEach((pt, i) => {
+        const x = padX + (plotW / (points.length - 1)) * i;
+        const y = padY + plotH * (1 - pt.val / maxVal);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#ff2a70";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        if (i % 3 === 0 || i === points.length - 1) {
+          ctx.fillStyle = "#64748b";
+          ctx.font = "9.5px sans-serif";
+          ctx.fillText(pt.label, x - 18, h - 8);
+        }
+      });
+    }
+
+    function renderCostDonut() {
+      const c = document.getElementById("cost-donut-canvas");
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = c.getBoundingClientRect();
+      c.width = rect.width * dpr;
+      c.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const centerX = w / 2;
+      const centerY = h / 2;
+      const outerR = Math.min(centerX, centerY) - 8;
+      const innerR = outerR * 0.58;
+
+      const slices = [
+        { pct: 0.486, color: "#ff2a70" },
+        { pct: 0.372, color: "#a855f7" },
+        { pct: 0.141, color: "#ff9eb8" }
+      ];
+
+      let currentAngle = -Math.PI / 2;
+
+      slices.forEach(sl => {
+        const sliceAngle = sl.pct * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, outerR, currentAngle, currentAngle + sliceAngle);
+        ctx.arc(centerX, centerY, innerR, currentAngle + sliceAngle, currentAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = sl.color;
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        currentAngle += sliceAngle;
+      });
+
+      ctx.fillStyle = "#1e293b";
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("154.5 Tr", centerX, centerY - 5);
+      ctx.font = "9px sans-serif";
+      ctx.fillStyle = "#64748b";
+      ctx.fillText("Chi phí", centerX, centerY + 10);
+    }
+
+    // PRINT REPORT
+    function printReport() {
+      playPopSound(720);
+      window.print();
+    }
+
+    function exportCleanCsv() {
+      playPopSound(750);
+      triggerMagicSparkles(window.innerWidth / 2, 400, 40);
+      const csvContent = "data:text/csv;charset=utf-8,Order_ID,Order_Date,Customer_ID,Region,City,Segment,Channel,Net_Sales_VND,Returned\n"
+        + samplePreviewRows.map(r => `${r.orderId},${r.date},${r.customer},${r.region},${r.city},${r.segment},${r.channel},${r.netSales.replace(/\./g,'')},${r.returned}`).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "dataflow_cleaned_sales_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Đã tải xuống tệp dữ liệu đã làm sạch: dataflow_cleaned_sales_report.csv");
+    }
+
+    function copyReportText() {
+      playPopSound(700);
+      const reportText = `BÁO CÁO ĐIỀU HÀNH DOANH NGHIỆP · DATAFLOW 2026\n\n`
+        + `• Doanh thu thuần: 191.107.000 VNĐ (-59,8% so với cao điểm T11)\n`
+        + `• Lợi nhuận gộp: 36.618.000 VNĐ (Biên lợi nhuận: 19,2%)\n`
+        + `• Chi phí vận hành: 154.489.000 VNĐ (Giảm 61,3%)\n`
+        + `• Đóng góp kênh: Cửa hàng trực tiếp (47,8%), Website/App (38,5%), Sàn TMĐT (13,7%)\n`
+        + `• Đề xuất: Đẩy mạnh chương trình Loyalty trên Web App, tối ưu chi phí cửa hàng vật lý.`;
+      navigator.clipboard.writeText(reportText).then(() => {
+        showToast("Đã sao chép nội dung tóm tắt báo cáo vào bộ nhớ tạm.");
+      });
+    }
+
+    function resetStudioSession() {
+      playPopSound(500);
+      document.getElementById("biz-type-input").value = "";
+      document.getElementById("biz-extra-input").value = "";
+      document.getElementById("biz-questions-input").value = "";
+      document.getElementById("sheets-link-input").value = "";
+      unlockedStep = 1;
+      goToStep(1);
+      showToast("Đã làm mới dữ liệu và thiết lập lại phiên làm việc ban đầu.");
+    }
+
+    function renderPreviewCleanTable() {
+      const tbody = document.getElementById("preview-cleaned-tbody");
+      if (!tbody) return;
+      tbody.innerHTML = samplePreviewRows.map(r => `
+        <tr>
+          <td><b>${r.orderId}</b></td>
+          <td>${r.date}</td>
+          <td>${r.customer}</td>
+          <td>${r.region}</td>
+          <td>${r.city}</td>
+          <td>${r.segment}</td>
+          <td><span style="font-weight:700; color:var(--hot-pink);">${r.channel}</span></td>
+          <td style="font-weight:800; font-family:var(--font-mono);">${r.netSales}</td>
+          <td><span style="padding:2px 8px; border-radius:9999px; font-weight:800; font-size:10.5px; ${r.returned === 'Có' ? 'background:#fee2e2; color:#b91c1c;' : 'background:var(--pastel-pink-soft); color:var(--berry-dark);'}">${r.returned}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPreviewCleanTable();
+      updateNavigationUI();
+      updateViewVisibility();
+      updateAiSpeech();
+      updateGroupCompare();
+    });
+  </script>
+
+  <!-- INTERACTIVE AI COPILOT DRAWER (FIX LẠI TRỢ LÝ) -->
+  <aside class="ai-copilot-drawer" id="ai-drawer">
+    <div class="ai-drawer-header">
+      <div class="ai-drawer-title-group">
+        <div class="ai-drawer-avatar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 12a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm12 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm-6 6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2v-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div>
+          <div class="ai-drawer-title">Trợ Lý Phân Tích DataFlow</div>
+          <div class="ai-drawer-status">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10b981;"></span>
+            Đang trực tuyến (Sẵn sàng hỗ trợ)
+          </div>
+        </div>
+      </div>
+      <button class="btn-close-drawer" onclick="closeAiCopilotDrawer()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ai-drawer-chat-area" id="ai-chat-history">
+      <div class="ai-message-bubble assistant">
+        Xin chào! Tôi là Trợ Lý Phân Tích Trí Tuệ Nhân Tạo của DataFlow. Bạn cần giải đáp câu hỏi nào về tệp dữ liệu, kiểm tra lỗi ô hay tóm tắt KPI tài chính điều hành?
+      </div>
+
+      <div class="ai-quick-pills-row">
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Phân tích cơ cấu doanh thu theo từng kênh?')">
+          📊 Doanh thu theo kênh nào cao nhất?
+        </button>
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Lỗi ô #REF! và giá trị âm nằm ở những dòng nào?')">
+          ⚠️ Kiểm tra lỗi ô và tỷ lệ hoàn đơn?
+        </button>
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Tóm tắt báo cáo tài chính và biên lợi nhuận gộp?')">
+          💡 Tóm tắt biên lợi nhuận gộp 19,2%?
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-drawer-input-row">
+      <input type="text" id="ai-user-input" class="ai-chat-input" placeholder="Hỏi trợ lý AI bất kỳ điều gì..." onkeypress="if(event.key==='Enter') sendUserMessage()">
+      <button class="btn-send-ai" onclick="sendUserMessage()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <script>
+    // 1. MOUSE GLOW TRACKER
+    window.addEventListener('mousemove', function(e) {
+      document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+      document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+    });
+
+    // 4. THEME TOGGLE SÁNG / TỐI Ở CHẤM NHỎ
+    function toggleThemeMode() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('dataflow_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+      if (typeof playPopSound === 'function') playPopSound(600);
+      showToast(isDark ? 'Đã kích hoạt Giao diện Tối (Dark Glow Mode).' : 'Đã kích hoạt Giao diện Sáng (Light Mode).');
+    }
+
+    function updateThemeIcon(isDark) {
+      const btn = document.getElementById('corner-theme-dot');
+      if (btn) {
+        if (isDark) {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+          btn.title = "Đang ở chế độ Tối (Bấm để chuyển Sáng)";
+        } else {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+          btn.title = "Đang ở chế độ Sáng (Bấm để chuyển Tối)";
+        }
+      }
+    }
+
+    // Load saved theme on boot
+    if (localStorage.getItem('dataflow_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      updateThemeIcon(true);
+    }
+
+    // 2. AI COPILOT DRAWER LOGIC
+    function openAiCopilotDrawer() {
+      const drawer = document.getElementById('ai-drawer');
+      if (drawer) {
+        drawer.classList.add('open');
+        document.getElementById('ai-user-input').focus();
+        if (typeof playPopSound === 'function') playPopSound(720);
+      }
+    }
+
+    function closeAiCopilotDrawer() {
+      const drawer = document.getElementById('ai-drawer');
+      if (drawer) {
+        drawer.classList.remove('open');
+        if (typeof playPopSound === 'function') playPopSound(480);
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('ai-user-input').value = promptText;
+      sendUserMessage();
+    }
+
+    function sendUserMessage() {
+      const input = document.getElementById('ai-user-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const chatHistory = document.getElementById('ai-chat-history');
+
+      // Append user bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'ai-message-bubble user';
+      userBubble.textContent = query;
+      chatHistory.appendChild(userBubble);
+      input.value = '';
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      if (typeof playPopSound === 'function') playPopSound(650);
+
+      // AI response logic
+      setTimeout(() => {
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'ai-message-bubble assistant';
+        aiBubble.innerHTML = generateStudioAiResponse(query);
+        chatHistory.appendChild(aiBubble);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        if (typeof playChimeSound === 'function') playChimeSound();
+      }, 400);
+    }
+
+    function generateStudioAiResponse(q) {
+      const lower = q.toLowerCase();
+      if (lower.includes('kênh') || lower.includes('doanh thu') || lower.includes('cao nhất')) {
+        return `<b>Phân tích doanh thu đa kênh (sales_data.csv):</b><br>• <b>Cửa hàng trực tiếp (In-Store):</b> Đạt <b>91.324.000 đ</b> (chiếm 47,8% tổng doanh thu - kênh dẫn đầu).<br>• <b>Website / App Online:</b> Đạt <b>73.526.000 đ</b> (chiếm 38,5% - biên lợi nhuận cao nhất 21,7%).<br>• <b>Sàn TMĐT (Shopee/TikTok):</b> Đạt <b>26.257.000 đ</b> (chiếm 13,7%).`;
+      }
+      if (lower.includes('lỗi') || lower.includes('ref') || lower.includes('hoàn') || lower.includes('sửa')) {
+        return `<b>Báo cáo rà soát lỗi dữ liệu & hoàn đơn:</b><br>• <b>Lỗi công thức:</b> Phát hiện 1 ô lỗi #REF! tại Cột C - Dòng 2.<br>• <b>Tỷ lệ đơn hoàn:</b> Nhóm Sàn TMĐT ghi nhận tỷ lệ hủy/hoàn 3,7% (cao hơn trung bình chuỗi).<br>• Hệ thống đã tự động định vị và gợi ý quy tắc chuẩn hóa dữ liệu tại Bước 2!`;
+      }
+      if (lower.includes('lợi nhuận') || lower.includes('biên') || lower.includes('tài chính') || lower.includes('kpi')) {
+        return `<b>Tổng hợp chỉ số tài chính điều hành (Kỳ T12/2025):</b><br>• <b>Tổng doanh thu:</b> 191.107.000 đ (-59,8% so với T11).<br>• <b>Chi phí vận hành:</b> 154.489.000 đ (-61,3% so với T11 - kiểm soát chi phí rất tốt).<br>• <b>Lợi nhuận gộp:</b> 36.618.000 đ.<br>• <b>Biên lợi nhuận gộp chuỗi:</b> <b>19,2%</b>.`;
+      }
+      if (lower.includes('báo cáo') || lower.includes('in') || lower.includes('a4') || lower.includes('pdf')) {
+        return `<b>Xuất báo cáo điều hành A4:</b><br>Bạn có thể chuyển tới <b>Bước 4 (Báo Cáo)</b> và bấm nút <b>In Báo Cáo (PDF)</b>. Bản in được chuẩn hóa khổ A4 gồm 4 thẻ KPI ngang, lưới biểu đồ 2x2, bảng số liệu tài chính chi tiết và 3 chữ ký chính thức.`;
+      }
+      return `Tôi đã ghi nhận câu hỏi của bạn về <i>"${q}"</i>! Toàn bộ số liệu 15.000 giao dịch đã được đồng bộ qua 4 bước phân tích. Bạn cần hỗ trợ thêm thông số nào ở bước hiện tại?`;
+    }
+  </script>
+
+</body>
+</html>

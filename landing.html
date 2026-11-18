@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataFlow – Intelligence 2026 · Nền Tảng Phân Tích Dữ Liệu Thông Minh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* HARMONIOUS LUXURY PINK PALETTE */
+      --canvas-bg: #fff5f8;
+      --card-bg: #ffffff;
+      --card-border: #ffd0dc;
+      --hot-pink: #ff2a70;
+      --hot-pink-hover: #e0185d;
+      --hot-pink-gradient: linear-gradient(135deg, #ff2a70 0%, #ff5287 100%);
+      --berry-dark: #881337;
+      --berry-pill: linear-gradient(135deg, #be123c 0%, #e11d48 40%, #ff2a70 100%);
+      
+      --pastel-pink-soft: #ffe4ec;
+      --pastel-pink-border: #ffd0dc;
+      --pastel-pink-light: #fff0f5;
+      
+      --text-dark: #0f172a;
+      --text-sub: #475569;
+      --text-muted: #8392a5;
+      
+      --gold-accent: #f59e0b;
+      --cyan-tech: #06b6d4;
+      --green-tech: #10b981;
+      
+      --border-radius-window: 24px;
+      --border-radius-card: 20px;
+      --border-radius-inner: 16px;
+      --border-radius-pill: 9999px;
+      
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* DARK MODE STYLES */
+    body.dark-mode {
+      --canvas-bg: #12050f;
+      --card-bg: #1e0b1b;
+      --card-border: #4a153b;
+      --text-dark: #fce7f3;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --pastel-pink-soft: #380e2d;
+      --pastel-pink-border: #5c184a;
+      --pastel-pink-light: #240d21;
+      background: radial-gradient(circle at 15% 15%, #2c0b24 0%, #170514 50%, #0d030c 100%) !important;
+      color: #fce7f3 !important;
+    }
+
+    body.dark-mode .landing-nav-bar,
+    body.dark-mode .landing-footer,
+    body.dark-mode .four-card-box,
+    body.dark-mode .bottom-pipeline-container,
+    body.dark-mode .btn-open-workspace,
+    body.dark-mode .ai-drawer-content {
+      background: #1c0a1a !important;
+      border-color: #4a153b !important;
+      color: #fce7f3 !important;
+    }
+    body.dark-mode .four-card-title,
+    body.dark-mode .nav-brand-title,
+    body.dark-mode .mini-spec-title,
+    body.dark-mode .footer-main-motto {
+      color: #ffffff !important;
+    }
+    body.dark-mode .four-card-desc,
+    body.dark-mode .hero-sub-description,
+    body.dark-mode .footer-sub-note {
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode .pipe-step-tag {
+      background: #2a0e26 !important;
+      border-color: #551b44 !important;
+      color: #fce7f3 !important;
+    }
+    body.dark-mode .chamber-card {
+      background: linear-gradient(160deg, #240c21 0%, #150514 100%) !important;
+      border-color: #ff2a70 !important;
+      box-shadow: 0 20px 50px rgba(255, 42, 112, 0.25) !important;
+    }
+    body.dark-mode .chamber-kpi-box {
+      background: #2f102b !important;
+      border-color: #531843 !important;
+    }
+    body.dark-mode .floating-hologram-pill {
+      background: #260d23 !important;
+      border-color: #ff2a70 !important;
+      color: #fce7f3 !important;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at 15% 15%, #ffeef4 0%, #fffbfd 45%, #fff5f8 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ============================================================
+       1. LUỒNG SÁNG TRỎ CHUỘT (DYNAMIC MOUSE GLOW SPOTLIGHT)
+       ============================================================ */
+    .mouse-spotlight-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(550px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(255, 42, 112, 0.12), transparent 70%);
+      transition: opacity 0.2s ease;
+    }
+
+    /* GLOBAL WATERMARKS (HÌNH IN CHÌM NỀN SANG TRỌNG) */
+    .global-background-watermarks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .watermark-svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* TOP NAVBAR */
+    .landing-nav-bar {
+      width: 100%;
+      max-width: 1360px;
+      padding: 22px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-brand-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--hot-pink-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(255, 42, 112, 0.35);
+      position: relative;
+    }
+
+    .nav-brand-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+
+    .nav-brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-brand-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--hot-pink);
+      background: var(--pastel-pink-soft);
+      padding: 3px 9px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid var(--pastel-pink-border);
+    }
+
+    .nav-links-center {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-link-btn {
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-sub);
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    .nav-link-btn:hover {
+      color: var(--hot-pink);
+    }
+
+    .btn-open-workspace {
+      background: #ffffff;
+      border: 1.5px solid #ffd0dc;
+      color: var(--text-dark);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: var(--border-radius-pill);
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.08);
+      transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-open-workspace:hover {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 8px 24px rgba(255, 42, 112, 0.36);
+      transform: translateY(-2px);
+    }
+
+    /* MAIN CONTAINER */
+    .landing-main-wrap {
+      width: 100%;
+      max-width: 1360px;
+      padding: 10px 32px 50px;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* HERO SPLIT SECTION */
+    .hero-split-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      align-items: center;
+      gap: 44px;
+      padding: 16px 0 10px;
+    }
+
+    /* LEFT HERO COLUMN */
+    .hero-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hero-agent-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pastel-pink-soft);
+      border: 1.5px solid var(--pastel-pink-border);
+      padding: 6px 16px;
+      border-radius: var(--border-radius-pill);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--hot-pink);
+      letter-spacing: 0.5px;
+      width: fit-content;
+    }
+    .hero-agent-pill .agent-dot-active {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--hot-pink);
+      box-shadow: 0 0 10px var(--hot-pink);
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero-title-main {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.9px;
+      color: var(--text-dark);
+    }
+    .hero-title-main span {
+      background: linear-gradient(135deg, #be123c 0%, #ff2a70 50%, #ff5287 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .hero-sub-description {
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: var(--text-sub);
+      font-weight: 500;
+      max-width: 580px;
+    }
+
+    /* 3. CHỈ ĐỂ 1 PHẦN NHẤN VÀO 'BẮT ĐẦU PHÂN TÍCH' DUY NHẤT */
+    .hero-btn-actions-group {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .btn-action-primary-single {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 16px 36px;
+      border-radius: var(--border-radius-pill);
+      font-size: 15px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(255, 42, 112, 0.45);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+      cursor: pointer;
+    }
+    .btn-action-primary-single:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 38px rgba(255, 42, 112, 0.55);
+    }
+
+    .hero-mini-specs-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 32px;
+      margin-top: 10px;
+      padding-top: 18px;
+      border-top: 1.5px dashed #ffd8e4;
+    }
+
+    .mini-spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .mini-spec-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--text-dark);
+      letter-spacing: -0.2px;
+    }
+    .mini-spec-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       5. LĂNG KÍNH THÔNG MINH HỒNG PASTEL (THAY CHO DASHBOARD TỐI)
+       HỢP 100% VỚI CHỦ ĐỀ & MÀU SẮC HỒNG PASTEL SANG TRỌNG
+       ============================================================ */
+    .hero-right-col {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px;
+    }
+
+    .chamber-card {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(150deg, #ffffff 0%, #fff7f9 60%, #ffeef4 100%);
+      border-radius: var(--border-radius-window);
+      border: 2px solid #ffd0dc;
+      box-shadow: 0 24px 60px rgba(255, 42, 112, 0.16), 0 4px 16px rgba(0, 0, 0, 0.03);
+      padding: 24px 26px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .chamber-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1.5px solid #ffe1eb;
+      margin-bottom: 18px;
+    }
+
+    .chamber-jewels-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .jewel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .jewel-1 { background: #ff2a70; }
+    .jewel-2 { background: #f59e0b; }
+    .jewel-3 { background: #10b981; }
+
+    .chamber-url-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--hot-pink);
+      background: #ffffff;
+      padding: 4px 14px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid #ffd0dc;
+      box-shadow: inset 0 1px 2px rgba(255, 42, 112, 0.05);
+    }
+
+    .chamber-verified-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: #10b981;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 4px 10px;
+      border-radius: var(--border-radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chamber-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .chamber-kpi-box {
+      background: #ffffff;
+      border: 1.5px solid #ffd8e4;
+      border-radius: var(--border-radius-inner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 6px 18px rgba(255, 42, 112, 0.05);
+    }
+    .chamber-kpi-box.highlight {
+      background: linear-gradient(135deg, #ffffff 0%, #fff3f7 100%);
+      border-color: #ff94b4;
+    }
+
+    .chamber-kpi-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .chamber-kpi-number {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text-dark);
+      font-family: var(--font-mono);
+      letter-spacing: -0.5px;
+    }
+    .chamber-kpi-pill {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--hot-pink);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* GLOWING ROSE TRENDLINE DISPLAY */
+    .chamber-chart-box {
+      background: #ffffff;
+      border: 1.5px solid #ffd8e4;
+      border-radius: var(--border-radius-inner);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(255, 42, 112, 0.05);
+    }
+
+    .chart-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .chart-box-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+    .chart-box-gain {
+      font-size: 11px;
+      font-weight: 900;
+      color: #10b981;
+      background: #ecfdf5;
+      padding: 3px 9px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid #a7f3d0;
+    }
+
+    .chart-svg-display {
+      width: 100%;
+      height: 65px;
+    }
+
+    /* FLOATING HOLOGRAPHIC BADGES */
+    .floating-hologram-pill {
+      position: absolute;
+      background: #ffffff;
+      border: 1.5px solid #ffd0dc;
+      padding: 9px 16px;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(255, 42, 112, 0.16);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 6;
+    }
+    .floating-top-badge {
+      top: -14px;
+      left: -12px;
+      animation: float-badge-1 3.2s ease-in-out infinite;
+    }
+    .floating-bottom-badge {
+      bottom: 24px;
+      right: -10px;
+      animation: float-badge-2 3.6s ease-in-out infinite;
+    }
+    @keyframes float-badge-1 {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes float-badge-2 {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    .badge-icon-wrap {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--pastel-pink-soft);
+      color: var(--hot-pink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .badge-text-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+    .badge-text-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .mockup-disclaimer-note {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* QUY TRÌNH 4 GIAI ĐOẠN */
+    .stages-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .stages-header-title {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: var(--hot-pink);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .features-four-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .four-card-box {
+      background: #ffffff;
+      border: 1.5px solid #ffd4e0;
+      border-radius: var(--border-radius-card);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 28px rgba(255, 90, 140, 0.06);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .four-card-box:hover {
+      transform: translateY(-4px);
+      border-color: var(--hot-pink);
+      box-shadow: 0 16px 36px rgba(255, 42, 112, 0.15);
+    }
+
+    .four-card-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--pastel-pink-soft);
+      border: 1px solid var(--pastel-pink-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--hot-pink);
+    }
+
+    .four-card-title {
+      font-size: 15.5px;
+      font-weight: 900;
+      color: var(--text-dark);
+      letter-spacing: -0.2px;
+    }
+
+    .four-card-subtitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--hot-pink);
+      margin-top: 2px;
+    }
+
+    .four-card-desc {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--text-sub);
+    }
+
+    /* BOTTOM PIPELINE */
+    .bottom-pipeline-container {
+      background: #ffffff;
+      border: 1.5px solid #ffd8e4;
+      border-radius: var(--border-radius-pill);
+      padding: 12px 16px 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 12px 36px rgba(255, 42, 112, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .pipeline-steps-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pipe-step-tag {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pastel-pink-light);
+      padding: 8px 16px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid var(--pastel-pink-border);
+    }
+
+    .pipe-arrow-sep {
+      color: var(--hot-pink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .btn-enter-system {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 24px;
+      border-radius: var(--border-radius-pill);
+      font-size: 13.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(255, 42, 112, 0.35);
+      transition: all 0.22s;
+    }
+    .btn-enter-system:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(255, 42, 112, 0.48);
+    }
+
+    /* FOOTER */
+    .landing-footer {
+      width: 100%;
+      border-top: 1.5px solid #ffd8e4;
+      background: #fffafd;
+      padding: 26px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .footer-main-motto {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+    .footer-sub-note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================================
+       4. CHẤM NHỎ ĐIỀU CHỈNH GIAO DIỆN SÁNG / TỐI Ở GÓC
+       ============================================================ */
+    .corner-floating-dock {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+    }
+
+    .corner-toggle-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1.5px solid #ffd0dc;
+      box-shadow: 0 8px 24px rgba(255, 42, 112, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--hot-pink);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .corner-toggle-dot:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 30px rgba(255, 42, 112, 0.38);
+      background: var(--pastel-pink-light);
+    }
+
+    /* ============================================================
+       2. TRỢ LÝ PHÂN TÍCH THÔNG MINH (INTERACTIVE AI COPILOT DRAWER)
+       ============================================================ */
+    .ai-copilot-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 90vw;
+      height: 100vh;
+      background: #ffffff;
+      border-left: 2px solid #ffd0dc;
+      box-shadow: -10px 0 40px rgba(255, 42, 112, 0.15);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ai-copilot-drawer.open {
+      right: 0;
+    }
+
+    .ai-drawer-header {
+      padding: 18px 20px;
+      border-bottom: 1.5px solid #ffe1eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--pastel-pink-light);
+    }
+
+    .ai-drawer-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-drawer-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-drawer-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text-dark);
+    }
+    .ai-drawer-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-close-drawer {
+      background: none;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-close-drawer:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--hot-pink);
+    }
+
+    .ai-drawer-chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #fffdfd;
+    }
+
+    .ai-message-bubble {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 90%;
+    }
+    .ai-message-bubble.assistant {
+      background: #ffffff;
+      border: 1px solid #ffd0dc;
+      color: var(--text-dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 14px rgba(255, 42, 112, 0.05);
+    }
+    .ai-message-bubble.user {
+      background: var(--hot-pink-gradient);
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai-quick-pills-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .btn-quick-pill {
+      background: #ffffff;
+      border: 1px solid #ffccd9;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--hot-pink);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-quick-pill:hover {
+      background: var(--pastel-pink-soft);
+      border-color: var(--hot-pink);
+    }
+
+    .ai-drawer-input-row {
+      padding: 14px 18px;
+      border-top: 1.5px solid #ffe1eb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+    }
+
+    .ai-chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid #ffd0dc;
+      border-radius: var(--border-radius-pill);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .ai-chat-input:focus {
+      border-color: var(--hot-pink);
+    }
+
+    .btn-send-ai {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--hot-pink-gradient);
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 42, 112, 0.35);
+      transition: transform 0.2s;
+    }
+    .btn-send-ai:hover {
+      transform: scale(1.08);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-split-grid {
+        grid-template-columns: 1fr;
+      }
+      .features-four-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .hero-title-main {
+        font-size: 32px;
+      }
+    }
+    @media (max-width: 640px) {
+      .features-four-row {
+        grid-template-columns: 1fr;
+      }
+      .hero-mini-specs-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .bottom-pipeline-container {
+        border-radius: 20px;
+      }
+    }
+  
+
+
+</style>
+</head>
+<body>
+
+  <!-- 1. DYNAMIC MOUSE SPOTLIGHT (LUỒNG SÁNG THEO CON CHUỘT) -->
+  <div class="mouse-spotlight-layer" id="mouse-spotlight" aria-hidden="true"></div>
+
+  <!-- GLOBAL WATERMARKS (HÌNH IN CHÌM NỀN SANG TRỌNG) -->
+  <div class="global-background-watermarks" aria-hidden="true">
+    <svg class="watermark-svg-layer" viewBox="0 0 1920 1080" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gWaterGold" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.25" />
+          <stop offset="60%" stop-color="#ff2a70" stop-opacity="0.12" />
+          <stop offset="100%" stop-color="#ffe4ec" stop-opacity="0.0" />
+        </linearGradient>
+        <linearGradient id="gWaterPink" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff2a70" stop-opacity="0.22" />
+          <stop offset="70%" stop-color="#f43f5e" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+        </linearGradient>
+        <pattern id="dotGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.2" fill="#ff2a70" fill-opacity="0.12" />
+        </pattern>
+      </defs>
+
+      <rect width="1920" height="1080" fill="url(#dotGrid)" />
+      <path d="M 800,-60 C 1150,160 1350,40 1680,220 C 1820,300 1900,240 1960,320 L 1960,-60 Z" fill="url(#gWaterGold)" />
+      <path d="M 1050,-60 C 1300,180 1520,90 1780,260 C 1880,330 1920,290 1980,360 L 1980,-60 Z" fill="url(#gWaterPink)" />
+      <path d="M 680,40 C 980,220 1250,110 1580,260 C 1780,350 1880,290 1960,380" fill="none" stroke="#d97706" stroke-width="1.8" stroke-opacity="0.32" />
+      <path d="M 740,70 C 1040,250 1310,140 1640,290 C 1830,375 1920,320 1980,405" fill="none" stroke="#ff2a70" stroke-width="2.0" stroke-opacity="0.28" />
+      <path d="M 810,105 C 1110,285 1380,175 1710,320 C 1880,400 1950,350 2000,430" fill="none" stroke="#f59e0b" stroke-width="1.4" stroke-opacity="0.22" />
+    </svg>
+  </div>
+
+  <!-- TOP NAVBAR -->
+  <header class="landing-nav-bar">
+    <a href="/landing" class="nav-brand-group">
+      <div class="nav-brand-avatar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <div>
+        <span class="nav-brand-title">
+          DataFlow
+          <span class="nav-brand-badge">Intelligence 2026</span>
+        </span>
+      </div>
+    </a>
+
+    <nav class="nav-links-center">
+      <a href="#quy-trinh" class="nav-link-btn">Quy trình</a>
+      <a href="#tinh-nang" class="nav-link-btn">Tính năng</a>
+      <span class="nav-link-btn" onclick="openAiCopilotDrawer()">
+        Trợ lý AI
+        <span style="font-size:10px; background:var(--pastel-pink-soft); color:var(--hot-pink); padding:2px 6px; border-radius:10px; font-weight:800; margin-left:4px;">Live</span>
+      </span>
+      <a href="/" class="nav-link-btn">Studio Phân Tích</a>
+    </nav>
+
+    <a href="/" class="btn-open-workspace">
+      Khởi Chạy Studio
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </header>
+
+  <!-- MAIN LANDING CONTENT -->
+  <main class="landing-main-wrap">
+    
+    <!-- ============================================================
+         SPLIT HERO SECTION
+         ============================================================ -->
+    <section class="hero-split-grid">
+      
+      <!-- LEFT HERO COLUMN -->
+      <div class="hero-left-col">
+        <div class="hero-agent-pill">
+          <span class="agent-dot-active"></span>
+          NỀN TẢNG PHÂN TÍCH DỮ LIỆU THÔNG MINH
+        </div>
+
+        <h1 class="hero-title-main">
+          Biến dữ liệu thành thông tin giá trị<br>
+          <span>Phân tích thông minh – Báo cáo chính xác</span>
+        </h1>
+
+        <p class="hero-sub-description">
+          DataFlow giúp doanh nghiệp kết nối dữ liệu từ nhiều nguồn, tự động chuẩn hóa, làm sạch và phân tích thông tin. Từ dữ liệu thô đến báo cáo trực quan, hỗ trợ nhà quản lý đưa ra quyết định kinh doanh nhanh chóng và hiệu quả.
+        </p>
+
+        <!-- 3. CHỈ ĐỂ 1 NÚT NHẤN 'BẮT ĐẦU PHÂN TÍCH' DUY NHẤT -->
+        <div class="hero-btn-actions-group">
+          <a href="/" class="btn-action-primary-single">
+            Bắt đầu phân tích →
+          </a>
+        </div>
+
+        <!-- 6. CÁC THÔNG SỐ NỔI BẬT -->
+        <div class="hero-mini-specs-row">
+          <div class="mini-spec-item">
+            <span class="mini-spec-title">4 giai đoạn</span>
+            <span class="mini-spec-desc">Quy trình phân tích dữ liệu.</span>
+          </div>
+
+          <div class="mini-spec-item">
+            <span class="mini-spec-title">4 định dạng</span>
+            <span class="mini-spec-desc">Excel, CSV, Google Sheets, JSON.</span>
+          </div>
+
+          <div class="mini-spec-item">
+            <span class="mini-spec-title">Tự động hóa</span>
+            <span class="mini-spec-desc">Hỗ trợ phát hiện và xử lý lỗi dữ liệu.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT HERO COLUMN: 5. LĂNG KÍNH PHÂN TÍCH HỒNG PASTEL CLAYMORPHISM -->
+      <div class="hero-right-col">
+        
+        <!-- FLOATING TOP HOLOGRAM BADGE -->
+        <div class="floating-hologram-pill floating-top-badge">
+          <div class="badge-icon-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <div class="badge-text-title">AI Intelligence Engine</div>
+            <div class="badge-text-sub">Tự động bóc tách & đối soát</div>
+          </div>
+        </div>
+
+        <!-- MAIN CHAMBER CARD (TONE HỒNG SANG TRỌNG) -->
+        <div class="chamber-card">
+          
+          <div class="chamber-top-bar">
+            <div class="chamber-jewels-row">
+              <span class="jewel-dot jewel-1"></span>
+              <span class="jewel-dot jewel-2"></span>
+              <span class="jewel-dot jewel-3"></span>
+            </div>
+
+            <div class="chamber-url-pill">
+              dataflow.studio/analytics
+            </div>
+
+            <div class="chamber-verified-tag">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Chất lượng: Đã kiểm tra
+            </div>
+          </div>
+
+          <!-- KPI TILES (10.96 TỶ & ĐẠI LÝ) -->
+          <div class="chamber-kpi-grid">
+            <div class="chamber-kpi-box highlight">
+              <span class="chamber-kpi-label">Tổng doanh thu</span>
+              <div class="chamber-kpi-number">10,96 tỷ</div>
+              <span class="chamber-kpi-pill">Trạng thái: Hoàn thành</span>
+            </div>
+
+            <div class="chamber-kpi-box">
+              <span class="chamber-kpi-label">Kênh bán hàng hiệu quả</span>
+              <div class="chamber-kpi-number" style="font-size:18px; font-weight:900;">Đại lý</div>
+              <span class="chamber-kpi-pill" style="color:#0284c7;">Đóng góp chủ lực</span>
+            </div>
+          </div>
+
+          <!-- TRENDLINE: TĂNG TRƯỞNG THEO QUÝ -->
+          <div class="chamber-chart-box">
+            <div class="chart-box-header">
+              <span class="chart-box-title">Xu hướng doanh thu: Tăng trưởng theo quý</span>
+              <span class="chart-box-gain">+13,7%</span>
+            </div>
+
+            <svg class="chart-svg-display" viewBox="0 0 400 80" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chamberLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff2a70" />
+                  <stop offset="60%" stop-color="#f59e0b" />
+                  <stop offset="100%" stop-color="#10b981" />
+                </linearGradient>
+                <linearGradient id="chamberAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#ff2a70" stop-opacity="0.22" />
+                  <stop offset="100%" stop-color="#ff2a70" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              <path d="M 10,65 Q 100,55 180,48 T 320,24 T 390,18 L 390,80 L 10,80 Z" fill="url(#chamberAreaGrad)" />
+              <path d="M 10,65 Q 100,55 180,48 T 320,24 T 390,18" fill="none" stroke="url(#chamberLineGrad)" stroke-width="3" stroke-linecap="round" />
+              <circle cx="180" cy="48" r="4.5" fill="#ff2a70" stroke="#ffffff" stroke-width="2" />
+              <circle cx="320" cy="24" r="5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+            </svg>
+
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; font-family:var(--font-mono); margin-top:2px;">
+              <span>Quý I: 2,8 tỷ</span>
+              <span>Quý II: 3,4 tỷ</span>
+              <span>Quý III: 4,76 tỷ</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FLOATING BOTTOM HOLOGRAM BADGE -->
+        <div class="floating-hologram-pill floating-bottom-badge">
+          <div class="badge-icon-wrap" style="background:#ecfdf5; color:#10b981;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <div>
+            <div class="badge-text-title">Báo Cáo A4 Chuẩn Hóa</div>
+            <div class="badge-text-sub">Sẵn sàng xuất PDF có chữ ký</div>
+          </div>
+        </div>
+
+        <!-- NOTE MINH HỌA -->
+        <p class="mockup-disclaimer-note">*Các số liệu trên chỉ là dữ liệu minh họa.*</p>
+
+      </div>
+
+    </section>
+
+    <!-- QUY TRÌNH 4 GIAI ĐOẠN -->
+    <div class="stages-section-header" id="quy-trinh">
+      <div class="stages-header-title">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        QUY TRÌNH 4 GIAI ĐOẠN PHÂN TÍCH DỮ LIỆU
+      </div>
+      <span style="font-size:12px; font-weight:700; color:var(--text-muted);">Tự động hóa toàn diện từ dữ liệu thô đến báo cáo</span>
+    </div>
+
+    <section class="features-four-row" id="tinh-nang">
+      
+      <!-- GIAI ĐOẠN 1 -->
+      <div class="four-card-box">
+        <div class="four-card-icon-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+        </div>
+        <div>
+          <h3 class="four-card-title">1. Kết Nối Nguồn</h3>
+          <div class="four-card-subtitle">Bối cảnh & Tệp dữ liệu</div>
+        </div>
+        <p class="four-card-desc">
+          Xác lập mục tiêu phân tích kinh doanh, tiếp nhận dữ liệu từ Google Sheets, Excel hoặc tệp CSV trực tiếp trên trình duyệt với độ bảo mật tuyệt đối.
+        </p>
+      </div>
+
+      <!-- GIAI ĐOẠN 2 -->
+      <div class="four-card-box">
+        <div class="four-card-icon-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h3 class="four-card-title">2. Làm Sạch</h3>
+          <div class="four-card-subtitle">Chuẩn hóa cấu trúc</div>
+        </div>
+        <p class="four-card-desc">
+          Đánh giá chất lượng dữ liệu (DQ Score), tự động phát hiện và định vị lỗi ô sai dạng (#REF!, giá trị âm, rỗng), chuẩn hóa tiền tệ Việt Nam.
+        </p>
+      </div>
+
+      <!-- GIAI ĐOẠN 3 -->
+      <div class="four-card-box">
+        <div class="four-card-icon-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+        <div>
+          <h3 class="four-card-title">3. Phân Tích</h3>
+          <div class="four-card-subtitle">So sánh & Khai phá</div>
+        </div>
+        <p class="four-card-desc">
+          Trực quan hóa doanh thu đa kênh, bóc tách cơ cấu chi phí, biên lợi nhuận gộp và đưa ra các nhận xét tự động theo từng nhóm chỉ số.
+        </p>
+      </div>
+
+      <!-- GIAI ĐOẠN 4 -->
+      <div class="four-card-box">
+        <div class="four-card-icon-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+        </div>
+        <div>
+          <h3 class="four-card-title">4. Báo Cáo</h3>
+          <div class="four-card-subtitle">Điều hành & Tăng trưởng</div>
+        </div>
+        <p class="four-card-desc">
+          Tổng hợp Dashboard KPI quản trị, đề xuất giải pháp chiến lược và hỗ trợ xuất bản báo cáo in A4 (PDF) chuyên nghiệp có chữ ký phê duyệt.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- BOTTOM PIPELINE WORKFLOW STRIP -->
+    <section class="bottom-pipeline-container">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:900; color:var(--hot-pink); margin-right:6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        4 GIAI ĐOẠN:
+      </div>
+
+      <div class="pipeline-steps-strip">
+        <span class="pipe-step-tag">1. Kết Nối Nguồn</span>
+        <span class="pipe-arrow-sep">➔</span>
+
+        <span class="pipe-step-tag">2. Làm Sạch</span>
+        <span class="pipe-arrow-sep">➔</span>
+
+        <span class="pipe-step-tag">3. Phân Tích</span>
+        <span class="pipe-arrow-sep">➔</span>
+
+        <span class="pipe-step-tag">4. Báo Cáo</span>
+      </div>
+
+      <a href="/" class="btn-enter-system">
+        Bắt đầu phân tích →
+      </a>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="footer-main-motto">
+      DataFlow – Kết nối dữ liệu, khai phá giá trị, thúc đẩy quyết định.
+    </div>
+    <div class="footer-sub-note">
+      Bảo mật dữ liệu 100% · Xử lý nội bộ trên trình duyệt · DataFlow Business Intelligence 2026
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       4. CHẤM NHỎ ĐIỀU CHỈNH GIAO DIỆN SÁNG / TỐI & TRỢ LÝ Ở GÓC
+       ============================================================ -->
+  <div class="corner-floating-dock">
+    <!-- TRỢ LÝ AI CHẤM NHỎ -->
+    <button class="corner-toggle-dot" onclick="openAiCopilotDrawer()" title="Mở Trợ lý Phân tích AI">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 12a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm12 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm-6 6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2v-2z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </button>
+
+    <!-- CHẤM SÁNG / TỐI THEME TOGGLE -->
+    <button id="theme-dot-btn" class="corner-toggle-dot" onclick="toggleThemeMode()" title="Chuyển đổi giao diện Sáng / Tối">
+      <svg id="theme-icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       2. TRỢ LÝ PHÂN TÍCH THÔNG MINH (INTERACTIVE AI COPILOT DRAWER)
+       ============================================================ -->
+  <aside class="ai-copilot-drawer" id="ai-drawer">
+    <div class="ai-drawer-header">
+      <div class="ai-drawer-title-group">
+        <div class="ai-drawer-avatar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 12a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm12 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm-6 6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2v-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div>
+          <div class="ai-drawer-title">Trợ Lý Phân Tích DataFlow</div>
+          <div class="ai-drawer-status">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10b981;"></span>
+            Đang trực tuyến (Sẵn sàng hỗ trợ)
+          </div>
+        </div>
+      </div>
+      <button class="btn-close-drawer" onclick="closeAiCopilotDrawer()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ai-drawer-chat-area" id="ai-chat-history">
+      <div class="ai-message-bubble assistant">
+        Xin chào! Tôi là Trợ Lý Phân Tích Thông Minh của DataFlow. Bạn cần giải đáp thắc mắc về quy trình phân tích dữ liệu, xử lý lỗi hay cách xuất báo cáo điều hành?
+      </div>
+
+      <div class="ai-quick-pills-row">
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Làm sao để kết nối Google Sheets hoặc tải tệp CSV?')">
+          📁 Cách kết nối Google Sheets & tải CSV?
+        </button>
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Hệ thống tự động phát hiện và xử lý những loại lỗi nào?')">
+          ⚠️ Hệ thống tự phát hiện & sửa lỗi gì?
+        </button>
+        <button class="btn-quick-pill" onclick="sendQuickPrompt('Báo cáo A4 xuất ra có những thông số và biểu đồ nào?')">
+          📄 Cấu trúc bản Báo Cáo Điều Hành A4?
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-drawer-input-row">
+      <input type="text" id="ai-user-input" class="ai-chat-input" placeholder="Hỏi trợ lý AI bất kỳ điều gì..." onkeypress="if(event.key==='Enter') sendUserMessage()">
+      <button class="btn-send-ai" onclick="sendUserMessage()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- JAVASCRIPT: MOUSE GLOW + THEME TOGGLE + AI ASSISTANT -->
+  <script>
+    // 1. MOUSE GLOW SPOTLIGHT TRACKER
+    window.addEventListener('mousemove', function(e) {
+      document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+      document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+    });
+
+    // 4. THEME TOGGLE SÁNG / TỐI Ở CHẤM NHỎ
+    function toggleThemeMode() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('dataflow_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+    }
+
+    function updateThemeIcon(isDark) {
+      const btn = document.getElementById('theme-dot-btn');
+      if (btn) {
+        if (isDark) {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+          btn.title = "Đang ở chế độ Tối (Bấm để chuyển Sáng)";
+        } else {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+          btn.title = "Đang ở chế độ Sáng (Bấm để chuyển Tối)";
+        }
+      }
+    }
+
+    // Load saved theme
+    if (localStorage.getItem('dataflow_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      updateThemeIcon(true);
+    }
+
+    // 2. AI COPILOT DRAWER CONTROLLER
+    function openAiCopilotDrawer() {
+      const drawer = document.getElementById('ai-drawer');
+      if (drawer) {
+        drawer.classList.add('open');
+        document.getElementById('ai-user-input').focus();
+      }
+    }
+
+    function closeAiCopilotDrawer() {
+      const drawer = document.getElementById('ai-drawer');
+      if (drawer) {
+        drawer.classList.remove('open');
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('ai-user-input').value = promptText;
+      sendUserMessage();
+    }
+
+    function sendUserMessage() {
+      const input = document.getElementById('ai-user-input');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const chatHistory = document.getElementById('ai-chat-history');
+
+      // Append user bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'ai-message-bubble user';
+      userBubble.textContent = query;
+      chatHistory.appendChild(userBubble);
+      input.value = '';
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      // Smart AI reply
+      setTimeout(() => {
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'ai-message-bubble assistant';
+        aiBubble.innerHTML = generateAiResponse(query);
+        chatHistory.appendChild(aiBubble);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }, 450);
+    }
+
+    function generateAiResponse(q) {
+      const lower = q.toLowerCase();
+      if (lower.includes('sheets') || lower.includes('csv') || lower.includes('kết nối') || lower.includes('tải')) {
+        return `<b>Cách kết nối nguồn dữ liệu:</b><br>1. Vào <b>Studio Phân Tích</b> (bấm nút <i>Bắt đầu phân tích →</i>).<br>2. Ở <b>Bước 1</b>, dán liên kết Google Sheets (công khai quyền xem) hoặc bấm chọn tệp CSV từ máy tính.<br>3. Hệ thống sẽ tự động quét Schema, hiển thị xem trước 10 dòng đầu tiên và mở khóa sang Bước 2!`;
+      }
+      if (lower.includes('lỗi') || lower.includes('ref') || lower.includes('sửa')) {
+        return `<b>Cơ chế phát hiện & xử lý lỗi tự động:</b><br>• Tự động bắt lỗi công thức sai tham chiếu (#REF!, #DIV/0!).<br>• Phát hiện giá trị rỗng hoặc số âm bất thường.<br>• Tự động bóc tách và nhân hệ số đơn vị tiền tệ Việt Nam (ví dụ 1,25 tỷ = 1.250.000.000 đ, 520 tr = 520.000.000 đ).<br>• Định vị chính xác lỗi theo Cột & Dòng để bạn duyệt trước khi phân tích.`;
+      }
+      if (lower.includes('báo cáo') || lower.includes('a4') || lower.includes('in') || lower.includes('pdf')) {
+        return `<b>Báo Cáo Điều Hành Chuẩn A4 gồm:</b><br>• Tiêu đề văn bản doanh nghiệp & mã lưu trữ bảo mật.<br>• 4 chỉ số KPI tổng hợp (Đơn hàng, Doanh thu, Lợi nhuận gộp, Chi phí).<br>• Lưới 4 biểu đồ trực quan (Xu hướng 12 tháng, Cơ cấu chi phí, Đóng góp kênh, Thay đổi doanh số).<br>• Bảng số liệu tài chính đa kênh chi tiết.<br>• 3 chữ ký chức danh (Người lập, Trưởng ban Tài chính, Ban Giám đốc).`;
+      }
+      return `Cảm ơn câu hỏi của bạn về <i>"${q}"</i>! DataFlow cung cấp quy trình 4 giai đoạn khép kín từ Kết nối nguồn ➔ Làm sạch ➔ Phân tích ➔ Xuất báo cáo điều hành A4. Bạn có thể bấm nút <b>Bắt đầu phân tích →</b> để trực tiếp trải nghiệm ngay bây giờ!`;
+    }
+  
+
+  
+
+</script>
+
+</body>
+</html>

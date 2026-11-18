@@ -1,0 +1,25 @@
+# ============================================================
+# Vercel Deployment Ignore Configuration
+# ============================================================
+
+# Local backend scripts
+server.py
+server_clean.py
+build_server.py
+agent_engine.py
+gemini_llm.py
+wsgi_adapter.py
+pipeline_execution_result.json
+
+# Local requirements backup
+requirements-local.txt
+
+# Local data & templates
+google_apps_script/
+data/
+templates/
+__pycache__/
+
+# Logs & temp files
+*.log
+*.tmp
